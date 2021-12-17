@@ -1,3 +1,11 @@
+#OSX
+
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+
 # Prerequisites
 *.d
 
