@@ -4,6 +4,8 @@
 .LSOverride
 ._*
 
+#VSCODE
+.history
 
 # Prerequisites
 *.d
