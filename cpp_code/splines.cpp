@@ -1,5 +1,6 @@
 #include "model.hpp" //Leave out until LA is working
 #include "linAlgHelperFunctions.hpp" // when I move everything over.
+#include "iocheck.hpp" //iochecking
 #include <vector>
 #include <string>
 #include <iostream>
@@ -9,11 +10,14 @@
 
 int main(int argc, char const *argv[])
 {
-    if (argc < 2)
-    {
-        std::cout << "add method" << "\n";
-        exit(-1);
+
+    if(InputCheck(argc, argv) == 0){
+        return(-1);
     }
+
+
+    
+    
 
     std::vector<double> t = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
     std::vector<double> y = {1,4,21,18,17,22,15,14,10,9,11,8,13,14,17};

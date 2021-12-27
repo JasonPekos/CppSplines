@@ -71,41 +71,41 @@ std::vector<std::vector<double>> Design(std::vector<double> t, uint64_t power){
     return(mat);
 }
 
-std::vector<std::vector<double>> DesignPowerBasis(std::vector<double> t, uint64_t power, uint64_t knots){
-    /**
-     * @brief Creates a design matrix for fitting a power basis spline of the nth order:
-     * 
-     * 
-     * For fitting polynomial regression models. 
-     * 
-     * @param t Time vector from data of form (t,y)
-     * @param power Largest element has degree power - 1.
-     * @param knots Number of knots
-     * 
-     * @return length(t) by j Vandermonde corresponding to input data.  
-     */
+// std::vector<std::vector<double>> DesignPowerBasis(std::vector<double> t, uint64_t power, uint64_t knots){
+//     /**
+//      * @brief Creates a design matrix for fitting a power basis spline of the nth order:
+//      * 
+//      * 
+//      * For fitting polynomial regression models. 
+//      * 
+//      * @param t Time vector from data of form (t,y)
+//      * @param power Largest element has degree power - 1.
+//      * @param knots Number of knots
+//      * 
+//      * @return length(t) by j Vandermonde corresponding to input data.  
+//      */
 
-    power = power + 1;
+//     power = power + 1;
 
-    //Set up matrix with correct dimensions:
-    std::vector<std::vector<double>> mat(t.size(), std::vector<double>(power + knots)); 
+//     //Set up matrix with correct dimensions:
+//     std::vector<std::vector<double>> mat(t.size(), std::vector<double>(power + knots)); 
 
-    //Populate matrix with appropriate elements: mat_i,j = t_i^{j-1}
-    for (uint64_t i = 0; i < t.size(); i++)
-    {
-        for (uint64_t j = 0; j < power; j++)
-        {
-            mat[i][j] = pow(t[i],j);
-        }
-        for (uin64_t j = 0; j < knots; j++) // Take another look at this indexing, should be 0-> knots and 
-        {
-            mat[i][power + j] = //pm(t[i] - knot[j])^ power - 1 (ADD pm function here)
-        }
+//     //Populate matrix with appropriate elements: mat_i,j = t_i^{j-1}
+//     for (uint64_t i = 0; i < t.size(); i++)
+//     {
+//         for (uint64_t j = 0; j < power; j++)
+//         {
+//             mat[i][j] = pow(t[i],j);
+//         }
+//         for (uin64_t j = 0; j < knots; j++) // Take another look at this indexing, should be 0-> knots and 
+//         {
+//             mat[i][power + j] = //pm(t[i] - knot[j])^ power - 1 (ADD pm function here)
+//         }
         
         
-    }
-    return(mat);
-}
+//     }
+//     return(mat);
+// }
 
 std::vector<std::vector<double>> Transpose(std::vector<std::vector<double>> A){
 
