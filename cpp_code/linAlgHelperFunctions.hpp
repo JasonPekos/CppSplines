@@ -55,6 +55,7 @@ std::vector<std::vector<double>> Design(std::vector<double> t, uint64_t power){
      * @return length(t) by j Vandermonde corresponding to input data.  
      */
 
+    power = power + 1;
     //Set up matrix with correct dimensions:
     std::vector<std::vector<double>> mat(t.size(), std::vector<double>(power)); 
 

@@ -19,23 +19,54 @@ class Spline
 {
 private:
 
-    int64_t Knots = 3; //Data about model (number of knots)
-    int64_t Power = 3; //Data about model (power of knots)
-    std::string Method = "PowerBasis"; //Data about model (Method) [PowerBasis or BSpline] 
-
-    std::vector<std::vector<double>> Coe(A.size(), std::vector<double>(1, 0));
-
-
-    void fit(){
-
-    }
-
-    void predict(){
-
-    }
+    uint64_t Knots = 3; //Data about model (number of knots)
+    uint64_t Power = 3; //Data about model (power of knots)
+    std::string Method = "PowerBasis"; //Data about model (Method) [PowerBasis or BSpline or PolynomialRegression] 
     
 public:
-    Spline(std::string method, int64_t power, int64_t knots){
+
+std::vector<std::vector<double>> Coe{1,std::vector<double>(1,0)};
+
+void fit(std::vector<double> t, std::vector<double> y){
+        //estimate(data[0], data[1], Coe (by reference ))
+
+        //If asked for PowerBasis
+        if (Method == "PowerBasis")
+        {
+            std::cout << "Not Implemented Yet" << "\n";
+        }
+
+        //If asked for Basis Spline
+        if (Method == "BSpline")
+        {
+           std::cout << "Not Implemented Yet" << "\n";
+        }
+
+        //If asked for polynomial regression. 
+        if (Method == "PolynomialRegression")
+        {
+            if (Knots > 0)
+            {
+                std::cout << "Warning: Knots parameter only applies to Bspline and PowerBasis methods.";
+            }
+            std::vector<std::vector<double>> DesignMatrix = Design(t,Power);
+            Coe = SolveSystem(MatMul(Transpose(DesignMatrix), DesignMatrix), MatVecMul(Transpose(DesignMatrix), y));
+        }
+    }
+
+    double predict(double t){
+        double val = 0;
+        if (Method == "PolynomialRegression")
+        {
+            
+            for (uint64_t i = 0; i < Coe.size(); i++)
+            {
+                val += Coe[i][0]*pow(t, i);
+            }
+        }
+        return(val);
+    }
+    Spline(std::string method, uint64_t power, uint64_t knots){
         /* constructor --- add error checking 
 
         knots -> int64_t, positive value
@@ -48,7 +79,6 @@ public:
         Power = power;
         Method = method;
     }
-    ~Spline();
 };
 
 
