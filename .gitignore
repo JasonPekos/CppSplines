@@ -6,6 +6,7 @@
 
 #VSCODE
 .history
+.VSCodeCounter
 
 # Prerequisites
 *.d
