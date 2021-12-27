@@ -1,0 +1,9 @@
+"filename", "language", "Markdown", "C++", "Julia", "comment", "blank", "total"
+"/Users/work/Desktop/CppSplines/README.md", "Markdown", 12, 0, 0, 0, 5, 17
+"/Users/work/Desktop/CppSplines/animation_throwaway_scripts/splineanimations.jl", "Julia", 0, 0, 233, 18, 76, 327
+"/Users/work/Desktop/CppSplines/animation_throwaway_scripts/splinestest.jl", "Julia", 0, 0, 64, 5, 31, 100
+"/Users/work/Desktop/CppSplines/cpp_code/iocheck.hpp", "C++", 0, 2, 0, 0, 2, 4
+"/Users/work/Desktop/CppSplines/cpp_code/linAlgHelperFunctions.hpp", "C++", 0, 140, 0, 88, 43, 271
+"/Users/work/Desktop/CppSplines/cpp_code/model.hpp", "C++", 0, 30, 0, 8, 13, 51
+"/Users/work/Desktop/CppSplines/cpp_code/splines.cpp", "C++", 0, 34, 0, 14, 33, 81
+"Total", "-", 12, 206, 297, 133, 203, 851

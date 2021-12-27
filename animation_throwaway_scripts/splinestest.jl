@@ -86,7 +86,12 @@ end
 
 soln  = TruncatedPowerBasisLinear(t,yNoise)
 
-soln  = TruncatedPowerBasisCubic(t,yNoise)
+soln2  = TruncatedPowerBasisCubic(t,yNoise)
+
+Q = DesignMatrixCubic([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15])
+y = [1,4,21,18,17,22,15,14,10,9,11,8,13,14,17]
+
+Q'Q
 
 
 plot(t,yNoise, seriestype = :scatter, label = "data", markershape = :x, grid=false, ticks = false, showaxis = false);
