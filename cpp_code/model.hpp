@@ -23,6 +23,7 @@ private:
     uint64_t Power = 3; //Data about model (power of knots)
     std::string Method = "PowerBasis"; //Data about model (Method) [PowerBasis or BSpline or PolynomialRegression] 
     
+    
 public:
 
 std::vector<std::vector<double>> Coe{1,std::vector<double>(1,0)};

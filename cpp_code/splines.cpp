@@ -34,7 +34,6 @@ int main(int argc, char const *argv[])
     PrintMat(qq);
 
 
-
     std::cout << "done :D" << "\n";
 
     return 0;
