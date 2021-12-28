@@ -95,6 +95,42 @@ void fit(std::vector<double> t, std::vector<double> y){
         //If asked for Basis Spline
         if (Method == "BSpline")
         {
+            //Empty out the knot positions vector, so we can push into the back safely. 
+            kTemp = {}; 
+            if (Knots > 0)
+            {
+                /*
+                Place 'Knots' evenly spaced knots over the range of time values. 
+                */
+                double range = t.back() - t.front();
+                double kEvery  = range / (Knots + 1);
+                double kCurrent = kEvery;
+                while (kCurrent < t.back())
+                {
+                    kTemp.push_back(kCurrent);
+                    kCurrent += kEvery;
+                }
+                
+            }
+            else
+            {
+                /*
+                If this is somehow being called without CL args (e.g. during code reuse), call an error if knots <= 0. 
+                */
+                std::cout << "error: at least one knot required" << "\n";
+                exit(-1);
+            }
+
+            //Push in padding knots for basis splines. 
+            uint64_t tempcounter = 0;
+            while (tempcounter < Power)
+            {
+                kTemp.insert(kTemp.begin(), 0);
+                kTemp.push_back(kTemp.back());
+                tempcounter +=1;
+            }
+            
+
            std::cout << "Not Implemented Yet" << "\n";
         }
     }

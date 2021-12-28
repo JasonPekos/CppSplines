@@ -135,10 +135,7 @@ int main(int argc, char const *argv[])
 
     
 
-
-
     /*DO TESTING HERE*/
-
     Spline modelPowerBasis("PowerBasis", 3, 4);
 
 
