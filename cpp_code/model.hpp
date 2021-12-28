@@ -122,6 +122,9 @@ void fit(std::vector<double> t, std::vector<double> y){
             }
 
             //Push in padding knots for basis splines. 
+
+            std::cout << "Checkpoint One" << "\n";
+
             uint64_t tempcounter = 0;
             while (tempcounter < Power)
             {
@@ -129,9 +132,19 @@ void fit(std::vector<double> t, std::vector<double> y){
                 kTemp.push_back(kTemp.back());
                 tempcounter +=1;
             }
-            
 
-           std::cout << "Not Implemented Yet" << "\n";
+            std::cout << "Checkpoint Two" << "\n";
+
+            //Create the design matrix for this program using the LinAlg function. 
+            std::vector<std::vector<double>> DesignMatrix = DesignBSplineBasis(t, Power, kTemp);
+
+            PrintMat(DesignMatrix);
+
+            //Solve as a linear system. 
+            std::vector<std::vector<double>> XTX = MatMul(Transpose(DesignMatrix), DesignMatrix);
+
+            //Return Coefficients.
+            Coe = SolveSystem(XTX, MatVecMul(Transpose(DesignMatrix), y));
         }
     }
 

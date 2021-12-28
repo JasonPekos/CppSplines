@@ -136,10 +136,12 @@ int main(int argc, char const *argv[])
     
 
     /*DO TESTING HERE*/
-    Spline modelPowerBasis("PowerBasis", 3, 4);
+    //Spline modelPowerBasis("PowerBasis", 3, 4);
+    Spline modelBSpline("BSpline", 3, 4);
 
 
-    modelPowerBasis.fit(t,y);
+    //modelPowerBasis.fit(t,y);
+    modelBSpline.fit(t,y);
 
 
     std::cout << "done :D" << "\n";
