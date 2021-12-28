@@ -16,7 +16,18 @@ int main(int argc, char const *argv[])
         return(-1);
     }
 
+    std::string method(argv[1]);
 
+    if (InputCheck(argc, argv) == 2)
+    {
+        method = "PolynomialRegression"; //If we don't have any knot points, just use PNR as the default. 
+    }
+    std::string Arg2(argv[2]);
+    std::string Arg3(argv[3]);
+
+    uint64_t power = (uint64_t)stoi(Arg2);
+    uint64_t knots = (uint64_t)stoi(Arg3);
+    
 
     std::vector<double> t = {}; //Empty vectors to push back into
     std::vector<double> y = {};
@@ -50,17 +61,11 @@ int main(int argc, char const *argv[])
             std::cout << "Error with .csv input file";
             return(-1);
         }
-        
 
         t.push_back(std::stod(xVal));
         y.push_back(std::stod(yVal));
-
-        std::cout << std::stod(xVal) << " ";
-        std::cout << std::stod(yVal) << "\n";
     }
     
-
-
     /*
     Check to make sure we have time series data. 
     */
@@ -70,21 +75,13 @@ int main(int argc, char const *argv[])
        return(-1);
    }
    
-    
 
-    std::string method(argv[1]);
-
-    Spline model("PolynomialRegression",3, 0);
-
+    //Fit model
+    Spline model(method, power, knots);
     model.fit(t,y);
-    double a = model.predict(12);
 
-    std::cout << "predicted value:" << a << "\n";
 
     std::vector<std::vector<double>> qq = model.Coe;
-
-    PrintMat(qq);
-
 
 
     /* 
@@ -122,7 +119,18 @@ int main(int argc, char const *argv[])
     output.close();
     std::cout << "output.csv updated \n"; //
 
-    std::cout << "done :D" << "\n";
+    
 
+
+
+    /*DO TESTING HERE*/
+
+    Spline modelPowerBasis("PowerBasis", 3, 4);
+
+
+    modelPowerBasis.fit(t,y);
+
+
+    std::cout << "done :D" << "\n";
     return 0;
 }

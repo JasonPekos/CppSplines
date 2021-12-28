@@ -57,15 +57,13 @@ int InputCheck(int argc, const char** argv){
         }
     }
     
-    if (Arg2.find_first_not_of("1234567890") != std::string::npos)
+    if (Arg2.find_first_not_of("1234567890") != std::string::npos) //Check to make sure arg two (power) is a positive integer. 
     {
-        std::cout << "Error: Please submit a positive integer as argument three.\n";
+        std::cout << "Error: Please submit a positive integer as argument two.\n";
         return(0);
     }
 
     
-
-
     //Check  arguments for possible errors and warnings.
     if (method != PNR)
     {
@@ -78,14 +76,14 @@ int InputCheck(int argc, const char** argv){
             } 
         }
     }
-    else if (atof(argv[2]) > 100)
+    else if (atof(argv[2]) > 100) //Splines of degree this large are very dumb. 
     {
         std::cout << "You have submitted an unreasonably large power value. ";
         std::cout << "The code will run, and this is mathematically well defined but please ";
         std::cout << "consider trying a smaller value --- splines of degree three are standard! \n";
         //return(0);
     }
-    else if (method != PNR)
+    else if (method != PNR) //Check number of knots submitted. 
     {
         if (atof(argv[3]) == 0)
         {
@@ -94,8 +92,5 @@ int InputCheck(int argc, const char** argv){
             return(2);
         }
     }
-    
     return(1);
-
-    //Check the .csv here also.
 }

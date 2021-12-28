@@ -74,6 +74,7 @@ function TruncatedPowerBasisCubic(t,y)
     B6 = pm.(t .- knots[3]).^3
 
     X = hcat(B0,B1,B2,B3,B4,B5,B6)
+    return(X)
 
     coe = (X' * X *1)\(X'y*1)
 
@@ -86,10 +87,23 @@ end
 
 soln  = TruncatedPowerBasisLinear(t,yNoise)
 
-soln2  = TruncatedPowerBasisCubic(t,yNoise)
 
-Q = DesignMatrixCubic([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15])
+t = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
 y = [1,4,21,18,17,22,15,14,10,9,11,8,13,14,17]
+
+coe = [-12.0478 ,
+13.0451 ,
+-1.30658 ,
+-0.00256772, 
+0.159023 ,
+-0.230872 ,
+2.5675 ]
+knots = [4,8,12]
+plot(coe[1] .+ coe[2]*t + coe[3]*t.^2 + coe[4]*t.^3 +
+           coe[5]*pm.(t .- knots[1]).^3 + coe[6] *pm.(t .- knots[2]).^3  + coe[7] *pm.(t .- knots[3]).^3)
+
+soln2  = TruncatedPowerBasisCubic(t,y)
+
 
 Q'Q
 
