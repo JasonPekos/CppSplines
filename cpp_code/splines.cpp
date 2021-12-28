@@ -17,13 +17,13 @@ int main(int argc, char const *argv[])
     }
 
 
-    std::vector<double> told = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
-    std::vector<double> yold = {1,4,21,18,17,22,15,14,10,9,11,8,13,14,17};
 
     std::vector<double> t = {}; //Empty vectors to push back into
-    std::vector<double> y = {}; 
+    std::vector<double> y = {};
 
-    std::string line = "";
+    std::string xVal; //temp variables to store IOStream values.
+    std::string yVal;
+
     /*
     Read in input.csv file
     */
@@ -33,53 +33,71 @@ int main(int argc, char const *argv[])
         cout << "Error opening file!";
         return(-1);
     }
-    while (std::getline(data, line))
+    while (data.peek()!= EOF)
     {
-        if (line.find_first_of("0123456789") == std::string::npos){
-            continue;
-        }
 
+        std::getline(data, xVal, ',');
+        std::getline(data, yVal, '\n');
+
+
+        if (xVal.find_first_not_of("-1234567890.")!= std::string::npos)
+        {
+            std::cout << "Error with .csv input file";
+            return(-1);
+        }
+        if (yVal.find_first_not_of("-1234567890.")!= std::string::npos)
+        {
+            std::cout << "Error with .csv input file";
+            return(-1);
+        }
+        
+
+        t.push_back(std::stod(xVal));
+        y.push_back(std::stod(yVal));
+
+        std::cout << std::stod(xVal) << " ";
+        std::cout << std::stod(yVal) << "\n";
     }
     
 
 
-
-
-
     /*
     Check to make sure we have time series data. 
-
     */
+   if (t.size() != y.size())
+   {
+       std::cout << "Error --- input data of different lengths";
+       return(-1);
+   }
+   
     
 
+    std::string method(argv[1]);
 
-    
-    
+    Spline model("PolynomialRegression",3, 0);
 
+    model.fit(t,y);
+    double a = model.predict(12);
 
+    std::cout << "predicted value:" << a << "\n";
 
+    std::vector<std::vector<double>> qq = model.Coe;
 
-
-    // std::string method(argv[1]);
-
-    // Spline model("PolynomialRegression",3, 0);
-
-    // model.fit(t,y);
-    // double a = model.predict(12);
-
-    // std::cout << "predicted value:" << a << "\n";
-
-    // std::vector<std::vector<double>> qq = model.Coe;
-
-    // PrintMat(qq);
+    PrintMat(qq);
 
 
 
     /* 
     file output
     */
-    std::vector<double> xTemp = {1,4,21,18,17,22,15,14,10,9,11,8,13,14,17}; //Model output.
-    std::vector<double> modelTemp = {1,4,21,18,17,22,15,14,10,9,11,8,13,14,17}; //Model output.
+    std::vector<double> xTemp = t; //Model output.
+    std::vector<double> modelTemp = {}; //Model output.
+
+    for (uint64_t i = 0; i < t.size(); i++)
+    {
+        modelTemp.push_back(model.predict(t[i]));
+    }
+    
 
 
     std::ofstream output("output.csv");  //IO check.
@@ -91,14 +109,14 @@ int main(int argc, char const *argv[])
 
     //Output CSV header names.
     output << "t" << ',';
-    output << "y" << ',';
+    output << "y";
     output << '\n';
 
 
     for (uint64_t i = 0; i < modelTemp.size(); i++)
     {
         output << xTemp[i] << ",";
-        output << modelTemp[i] << "," <<  '\n';
+        output << modelTemp[i] <<  '\n';
     }
     
     output.close();
