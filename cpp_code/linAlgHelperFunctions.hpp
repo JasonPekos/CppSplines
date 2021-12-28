@@ -124,7 +124,7 @@ std::vector<std::vector<double>> DesignBSplineBasis(std::vector<double> t, uint6
     power = power + 1;
 
     //Set up matrix with correct dimensions:
-    std::vector<std::vector<double>> mat(t.size(), std::vector<double>(knots.size() - 2*power + 1, 0)); 
+    std::vector<std::vector<double>> mat(t.size(), std::vector<double>(knots.size() - 2*power - 2 + 1, 0)); 
 
 
     //Populate matrix with appropriate elements: 

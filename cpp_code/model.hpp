@@ -126,7 +126,7 @@ void fit(std::vector<double> t, std::vector<double> y){
             std::cout << "Checkpoint One" << "\n";
 
             uint64_t tempcounter = 0;
-            while (tempcounter < Power)
+            while (tempcounter < Power + 1) //Add power + 1 padded knots on each side. 
             {
                 kTemp.insert(kTemp.begin(), 0);
                 kTemp.push_back(kTemp.back());
