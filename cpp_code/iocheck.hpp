@@ -83,11 +83,17 @@ int InputCheck(int argc, const char** argv){
         std::cout << "consider trying a smaller value --- splines of degree three are standard! \n";
         //return(0);
     }
+    else if (atof(argv[2]) < 1) 
+    {
+        std::cout << "IO Warning: You have submitted an unreasonably small power value. ";
+        std::cout << "Please supply a value greater than zero. \n";
+        return(0);
+    }
     else if (method != PNR) //Check number of knots submitted. 
     {
         if (atof(argv[3]) == 0)
         {
-            std::cout << "Zero knots submitted.\n";
+            std::cout << "IO Warning: zero knots submitted!\n";
             std::cout << "Changing to polynomial regression. \n";
             return(2);
         }

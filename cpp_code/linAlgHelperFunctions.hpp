@@ -99,7 +99,7 @@ std::vector<std::vector<double>> DesignPowerBasis(std::vector<double> t, uint64_
         {
             mat[i][j] = pow(t[i],j);
         }
-        for (uint64_t j = 0; j < knots.size(); j++) // Take another look at this indexing, should be 0-> knots and 
+        for (uint64_t j = 0; j < knots.size(); j++) //
         {
             mat[i][power + j] = pow(pm(t[i] - knots[j]),(power - 1));
         }
@@ -124,7 +124,7 @@ std::vector<std::vector<double>> DesignBSplineBasis(std::vector<double> t, uint6
     //power = power + 1;
 
     //Set up matrix with correct dimensions:
-    std::vector<std::vector<double>> mat(t.size(), std::vector<double>(knots.size() - 2*(power ), 0));
+    std::vector<std::vector<double>> mat(t.size(), std::vector<double>(knots.size() - 2*(power) + 1, 0));
 
     PrintMat(mat);
 
@@ -135,7 +135,7 @@ std::vector<std::vector<double>> DesignBSplineBasis(std::vector<double> t, uint6
     //Populate matrix with appropriate elements: 
     for (uint64_t i = 0; i < t.size(); i++)
     {
-        for (uint64_t j = 0; j < (knots.size() - 2*(power)); j++)
+        for (uint64_t j = 0; j < (knots.size() - 2*(power) + 1); j++)
         {
             mat[i][j] = CoxDeBoor(t[i], j, knots, power);
         }
@@ -340,4 +340,41 @@ std::vector<std::vector<double>> SolveSystem(std::vector<std::vector<double>> B,
         Soln[(uint64_t)i][0] = answer;
     }
     return(Soln); //Return solution vector.
+}
+
+bool NotNAN(double var){
+    /**
+     * @brief Checks if a value is NAN
+     * 
+     * @param var Variable we're checking.
+     * 
+     */
+    if (var != var)
+    {
+        return(0);
+    }
+    else
+    {
+        return(1);
+    }
+}
+
+bool MatNoNAN(std::vector<std::vector<double>> mat){
+    /**
+     * @brief Returns One if Vector contains a NaN.
+     * 
+     * @param mat Matrix we care about. 
+     * 
+     */
+    for (uint64_t i = 0; i < mat.size(); i++)
+    {
+        for (uint64_t j = 0; j < mat[0].size(); j++)
+        {
+            if (!NotNAN(mat[i][j]))
+            {
+                return(0);
+            }
+        }
+    }
+    return(1);
 }

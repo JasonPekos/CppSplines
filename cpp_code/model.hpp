@@ -43,13 +43,18 @@ void fit(std::vector<double> t, std::vector<double> y){
         {
             //Empty out the knot positions vector, so we can push into the back safely. 
             kTemp = {}; 
-            if (Knots > 0)
+            if (Knots == 1)
+            {
+                kTemp.push_back((t.back() - t.front() )/ 2);
+            }
+            
+            if (Knots > 1)
             {
                 /*
                 Place 'Knots' evenly spaced knots over the range of time values. 
                 */
                 double range = t.back() - t.front();
-                double kEvery  = range / (Knots + 1);
+                double kEvery  = range / (Knots);
                 double kCurrent = kEvery;
                 while (kCurrent < t.back())
                 {
@@ -58,7 +63,7 @@ void fit(std::vector<double> t, std::vector<double> y){
                 }
                 
             }
-            else
+            if (Knots < 1)
             {
                 /*
                 If this is somehow being called without CL args (e.g. during code reuse), call an error if knots <= 0. 
@@ -97,7 +102,12 @@ void fit(std::vector<double> t, std::vector<double> y){
         {
             //Empty out the knot positions vector, so we can push into the back safely. 
             kTemp = {}; 
-            if (Knots > 0)
+            if (Knots == 1)
+            {
+                kTemp.push_back((t.back() - t.front() )/ 2);
+            }
+            
+            if (Knots > 1)
             {
                 /*
                 Place 'Knots' evenly spaced knots over the range of time values. 
@@ -112,7 +122,7 @@ void fit(std::vector<double> t, std::vector<double> y){
                 }
                 
             }
-            else
+            if (Knots < 1)
             {
                 /*
                 If this is somehow being called without CL args (e.g. during code reuse), call an error if knots <= 0. 
@@ -122,8 +132,6 @@ void fit(std::vector<double> t, std::vector<double> y){
             }
 
             //Push in padding knots for basis splines. 
-
-
             uint64_t tempcounter = 0;
             while (tempcounter < Power + 1) //Add power + 1 padded knots on each side. 
             {
@@ -145,6 +153,12 @@ void fit(std::vector<double> t, std::vector<double> y){
             //Return Coefficients.
             Coe = SolveSystem(XTX, MatVecMul(Transpose(DesignMatrix), y));
         }
+        if (MatNoNAN(Coe) == 0)
+        {
+            std::cout << "\n \n WARNING: The combination of knots / degrees / input data submitted has resulted in numerical instability."; 
+            std::cout << "Model fitting has failed. Recommendation is to reduce knots / power, especially for small datasets. \n \n";
+        }
+        
     }
 
     double predict(double t){
@@ -190,6 +204,7 @@ void fit(std::vector<double> t, std::vector<double> y){
                 val += Coe[i][0]*CoxDeBoor(t,i, kTemp, Power);
             }
         }
+
         
         return(val);
     }
@@ -229,6 +244,15 @@ void fit(std::vector<double> t, std::vector<double> y){
             std::cout << "Error: submit a valid method!" << "\n";
             throw std::invalid_argument( "received illegitimate method" );
         }
+        if (method == PBS)
+        {
+            if (power > 4)
+            {
+                std::cout << "WARNING: Asking for a power basis with power > 4." << "\n";
+                std::cout << "Powers this large result in numerically unstable regression matrices" << "\n";
+            }
+        }
+        
     }
 };
 

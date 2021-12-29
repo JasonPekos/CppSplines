@@ -75,3 +75,16 @@ double CoxDeBoor(double x, uint64_t index, std::vector<double> knots, uint64_t p
     
     return(out);
 }
+
+std::vector<double> linspace(double a, double b, double by){
+    std::vector<double> out = {};
+    double current = a;
+
+    while (current < b)
+    {
+        out.push_back(current);
+        current += by;
+    }
+    
+    return(out);
+}

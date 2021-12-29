@@ -29,11 +29,22 @@ int main(int argc, char const *argv[])
 
     //Bring over knots and power CL arguments.
     std::string Arg2(argv[2]);
-    std::string Arg3(argv[3]);
+
+    std::string PNR  = "PolynomialRegression";
+    std::string BSP  = "BSpline";
+    std::string PSP  = "PowerBasis";
+    
 
     //Case to fixed width values. 
     uint64_t power = (uint64_t)stoi(Arg2);
-    uint64_t knots = (uint64_t)stoi(Arg3);
+    uint64_t knots = 0;
+
+
+    if (method != PNR)
+    {
+        std::string Arg3(argv[3]);
+        knots = (uint64_t)stoi(Arg3);
+    }
     
 
     //Empty vectors to push .CSV input back into
@@ -99,13 +110,13 @@ int main(int argc, char const *argv[])
     model.fit(t,y);
 
     //Temp vectors to hold predictions. 
-    std::vector<double> xTemp = t; //Model output.
+    std::vector<double> xTemp = linspace(t[0],t.back(), 0.1); //Model output.
     std::vector<double> modelTemp = {}; //Model output.
 
     //Predict values at each timepoint in our initial dataset. 
-    for (uint64_t i = 0; i < t.size(); i++)
+    for (uint64_t i = 0; i < xTemp.size(); i++)
     {
-        modelTemp.push_back(model.predict(t[i]));
+        modelTemp.push_back(model.predict(xTemp[i]));
     }
     
     /* 
@@ -124,6 +135,7 @@ int main(int argc, char const *argv[])
     output << '\n';
 
     //Populate .CSV.
+
     for (uint64_t i = 0; i < modelTemp.size(); i++)
     {
         output << xTemp[i] << ",";
@@ -139,25 +151,9 @@ int main(int argc, char const *argv[])
 
     std::cout << model.predict(8) << "\n";
 
+
+
     std::cout << "\n";
-
-    
-    std::cout << "[ ";
-    for (double i = 0; i < 150; i++)
-    {
-         std::cout << model.Coe[6][0] * CoxDeBoor(i/10, 6,k2, 3) << ",";
-    }
-
-
-    std::cout << "\n ";
-
-    for (double i = 0; i < 150; i++)
-    {
-         std::cout << i/10 << ",";
-    }
-    
-    
-    
     std::cout << "done :D" << "\n";
     return 0;
 }

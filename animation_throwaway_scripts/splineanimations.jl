@@ -151,7 +151,7 @@ coe = (X' * X *1)\(X'y*1)
 soln = coe[1]*B03 + coe[2]*B13 + coe[3]*B23 + coe[4]*B33 + coe[5]*B43 + coe[6]*B53 + coe[7]*B63
 
 plot(x,soln);
-plot!(x,y, seriestype = scatter);
+plot(x,y, seriestype = scatter);
 plot(x,soln);
 plot!(coe[1]*B03);
 plot!(coe[2]*B13);
