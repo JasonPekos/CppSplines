@@ -133,17 +133,9 @@ int main(int argc, char const *argv[])
     output.close();
     std::cout << "output.csv updated \n"; //
 
+    PrintMat(model.Coe);
     
-
-    /*DO TESTING HERE*/
-    //Spline modelPowerBasis("PowerBasis", 3, 4);
-    Spline modelBSpline("BSpline", 3, 4);
-
-
-    //modelPowerBasis.fit(t,y);
-    modelBSpline.fit(t,y);
-
-
+    
     std::cout << "done :D" << "\n";
     return 0;
 }

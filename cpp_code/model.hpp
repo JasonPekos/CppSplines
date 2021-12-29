@@ -103,7 +103,7 @@ void fit(std::vector<double> t, std::vector<double> y){
                 Place 'Knots' evenly spaced knots over the range of time values. 
                 */
                 double range = t.back() - t.front();
-                double kEvery  = range / (Knots + 1);
+                double kEvery  = range / (Knots);
                 double kCurrent = kEvery;
                 while (kCurrent < t.back())
                 {
@@ -123,17 +123,14 @@ void fit(std::vector<double> t, std::vector<double> y){
 
             //Push in padding knots for basis splines. 
 
-            std::cout << "Checkpoint One" << "\n";
 
             uint64_t tempcounter = 0;
             while (tempcounter < Power + 1) //Add power + 1 padded knots on each side. 
             {
                 kTemp.insert(kTemp.begin(), 0);
-                kTemp.push_back(kTemp.back());
+                kTemp.push_back(t.back());
                 tempcounter +=1;
             }
-
-            std::cout << "Checkpoint Two" << "\n";
 
             //Create the design matrix for this program using the LinAlg function. 
             std::vector<std::vector<double>> DesignMatrix = DesignBSplineBasis(t, Power, kTemp);
@@ -142,6 +139,8 @@ void fit(std::vector<double> t, std::vector<double> y){
 
             //Solve as a linear system. 
             std::vector<std::vector<double>> XTX = MatMul(Transpose(DesignMatrix), DesignMatrix);
+
+            PrintMat(XTX);
 
             //Return Coefficients.
             Coe = SolveSystem(XTX, MatVecMul(Transpose(DesignMatrix), y));
@@ -182,6 +181,16 @@ void fit(std::vector<double> t, std::vector<double> y){
                 val += Coe[i][0]*pow(pm(t - kTemp[i - (Power + 1 )]), Power);
             }
         }
+        if (Method == "BSpline")
+        {
+            val = 0;
+            //Again, sum(coe_n*basisFuction_n (t)) for all n.
+            for (uint64_t i = 0; i < Coe.size(); i++)
+            {
+                val += Coe[i][0]*CoxDeBoor(t,i + Power, kTemp, Power);
+            }
+        }
+        
         return(val);
     }
 

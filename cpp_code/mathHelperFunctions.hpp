@@ -44,12 +44,14 @@ double CoxDeBoor(double x, uint64_t index, std::vector<double> knots, uint64_t p
             }
             else
             {
-                return(0);
+                out = 0;
+                return(out);
             }
         }
         else
         {
-            return(0);
+            out = 0;
+            return(out);
         }
     }
     if ((knots[power + index] - knots[index]) == 0)
@@ -69,7 +71,7 @@ double CoxDeBoor(double x, uint64_t index, std::vector<double> knots, uint64_t p
         a2 = (knots[index + power + 1] - x)/(knots[power + index + 1] - knots[index + 1]);
     }
 
-    out = a1*CoxDeBoor(x,index, knots, power-1) + a2*CoxDeBoor(x,index + 1, knots, power -1);
+    out = a1*CoxDeBoor(x,index, knots, power-1) + a2*CoxDeBoor(x,index + 1, knots, power-1);
     
     return(out);
 }
