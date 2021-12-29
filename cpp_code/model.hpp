@@ -36,7 +36,20 @@ void fit(std::vector<double> t, std::vector<double> y){
     /**
      * @brief Fit the model on data (t,y).
      * 
+     * Uses the closed form solutions: Coefficients = (XT*X)^-1 * XT*y
+     * 
+     * Solved using Gaussian Elimination with Back Substitution instead of a matrix inverse, 
+     * as numerical computation of the inverse is ill-conditioned. 
+     * 
      */
+
+        if (Knots > (t.size() - 1))
+        //Quick warning if Knots > Datapoints. 
+        {
+            std::cout << "WARNING: initializing a spline with more knots than datapoints will likely lead to perfect multicolinearity. ";
+            std::cout << "It is extremely unlikely that this model was fit correctly. \n";
+
+        }
 
         //If asked for PowerBasis, continue by fitting with the following method:
         if (Method == "PowerBasis")
@@ -45,6 +58,7 @@ void fit(std::vector<double> t, std::vector<double> y){
             kTemp = {}; 
             if (Knots == 1)
             {
+                //If we have one knot only, place it in the middle of the data. 
                 kTemp.push_back((t.back() - t.front() )/ 2);
             }
             
@@ -104,6 +118,7 @@ void fit(std::vector<double> t, std::vector<double> y){
             kTemp = {}; 
             if (Knots == 1)
             {
+                //If there is one single knot, place it in the middle of the interval.
                 kTemp.push_back((t.back() - t.front() )/ 2);
             }
             
@@ -143,22 +158,24 @@ void fit(std::vector<double> t, std::vector<double> y){
             //Create the design matrix for this program using the LinAlg function. 
             std::vector<std::vector<double>> DesignMatrix = DesignBSplineBasis(t, Power, kTemp);
 
-            PrintMat(DesignMatrix);
-
             //Solve as a linear system. 
             std::vector<std::vector<double>> XTX = MatMul(Transpose(DesignMatrix), DesignMatrix);
-
-            PrintMat(XTX);
 
             //Return Coefficients.
             Coe = SolveSystem(XTX, MatVecMul(Transpose(DesignMatrix), y));
         }
         if (MatNoNAN(Coe) == 0)
         {
+            /*
+            Some combinations of data / basis representation / knot amount can lead to perfectly multicolinear columns,
+            and therefore NaNs after we try to solve the system. The resulting system cannot be plotted, so we 
+            throw a warning here, and let the user know model fitting has failed. 
+
+            We still save the coefficient matrix because the position of the NaNs can be informative. 
+            */
             std::cout << "\n \n WARNING: The combination of knots / degrees / input data submitted has resulted in numerical instability. "; 
             std::cout << "Model fitting has failed. Recommendation is to reduce knots / power, especially for small datasets. \n \n";
-        }
-        
+        }        
     }
 
     double predict(double t){
@@ -204,8 +221,6 @@ void fit(std::vector<double> t, std::vector<double> y){
                 val += Coe[i][0]*CoxDeBoor(t,i + 1, kTemp, Power);
             }
         }
-
-        
         return(val);
     }
 
@@ -251,8 +266,7 @@ void fit(std::vector<double> t, std::vector<double> y){
                 std::cout << "WARNING: Asking for a power basis with power > 4." << "\n";
                 std::cout << "Powers this large result in numerically unstable regression matrices" << "\n";
             }
-        }
-        
+        }        
     }
 };
 

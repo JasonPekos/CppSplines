@@ -119,8 +119,9 @@ int main(int argc, char const *argv[])
         modelTemp.push_back(model.predict(xTemp[i]));
     }
     
+
     /* 
-    file output
+    FILE OUTPUT
     */
     std::ofstream output("output.csv");  //IO check.
     if (!output.is_open())
@@ -135,7 +136,6 @@ int main(int argc, char const *argv[])
     output << '\n';
 
     //Populate .CSV.
-
     for (uint64_t i = 0; i < modelTemp.size(); i++)
     {
         output << xTemp[i] << ",";
@@ -145,15 +145,6 @@ int main(int argc, char const *argv[])
     output.close();
     std::cout << "output.csv updated \n"; //
 
-    PrintMat(model.Coe);
-
-    std::vector<double> k2 = {0, 0, 0, 0, 2.8, 5.6, 8.4, 11.2, 14, 15, 15, 15, 15};
-
-    std::cout << model.predict(14.5) << "\n";
-
-
-
-    std::cout << "\n";
-    std::cout << "done :D" << "\n";
+    //PrintMat(model.Coe); Uncomment to return model coefficient values. For testing / debugging. 
     return 0;
 }

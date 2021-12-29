@@ -144,24 +144,16 @@ std::vector<std::vector<double>> DesignBSplineBasis(std::vector<double> t, uint6
     //Set up matrix with correct dimensions:
     std::vector<std::vector<double>> mat(t.size(), std::vector<double>(k, 0));
 
-    for (int i = 0; i < RealKnots.size(); i++)
-    {
-        std::cout << RealKnots[i] << " ";
-    }
     
-    
-
     //Populate matrix with appropriate elements: 
     for (uint64_t i = 0; i < t.size(); i++)
     {
         for (uint64_t j = 1; j <= k; j++)
         {
             mat[i][j - 1] = CoxDeBoor(t[i], j , knots, power);   
-            std::cout << "x,index,power: " << t[i] << "," << j << "," << power << " | " << CoxDeBoor(t[i], j , knots, power)  << "\n";
         }
     }
-    mat[t.size() - 1][k-1] = 1;
-    //mat[t.size() - 1][k-2] = 1;
+    mat[t.size() - 1][k-1] = 1; //Assign at right boundary to properly fit boundary basis. 
     return(mat);
 }
 
