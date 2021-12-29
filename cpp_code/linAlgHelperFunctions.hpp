@@ -154,9 +154,10 @@ std::vector<std::vector<double>> DesignBSplineBasis(std::vector<double> t, uint6
     //Populate matrix with appropriate elements: 
     for (uint64_t i = 0; i < t.size(); i++)
     {
-        for (uint64_t j = 0; j < k; j++)
+        for (uint64_t j = 1; j <= k; j++)
         {
-            mat[i][j] = CoxDeBoor(t[i], j +1 , knots, power);   
+            mat[i][j - 1] = CoxDeBoor(t[i], j , knots, power);   
+            std::cout << "x,index,power: " << t[i] << "," << j << "," << power << " | " << CoxDeBoor(t[i], j , knots, power)  << "\n";
         }
     }
     mat[t.size() - 1][k-1] = 1;
