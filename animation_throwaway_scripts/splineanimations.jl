@@ -150,6 +150,20 @@ coe = (X' * X *1)\(X'y*1)
 
 soln = coe[1]*B03 + coe[2]*B13 + coe[3]*B23 + coe[4]*B33 + coe[5]*B43 + coe[6]*B53 + coe[7]*B63
 
+plot(x,soln);
+plot!(x,y, seriestype = scatter);
+plot(x,soln);
+plot!(coe[1]*B03);
+plot!(coe[2]*B13);
+plot!(coe[3]*B23);
+plot!(coe[4]*B33);
+plot!(coe[5]*B43);
+plot!(coe[6]*B53);
+plot!(coe[7]*B63)
+
+
+
+
 q = reverse(10 .^range(-2.5,stop=0.1,length=100))
 @gif for i in q
     plot(t,yNoise, seriestype = :scatter, label = "data",markershape = :x, markercolor = :black, grid=false, ticks = false, showaxis = false);

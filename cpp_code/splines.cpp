@@ -134,6 +134,28 @@ int main(int argc, char const *argv[])
     std::cout << "output.csv updated \n"; //
 
     PrintMat(model.Coe);
+
+    std::vector<double> k2 = {0, 0, 0, 0, 2.8, 5.6, 8.4, 11.2, 14, 15, 15, 15, 15};
+
+    std::cout << model.predict(8) << "\n";
+
+    std::cout << "\n";
+
+    
+    std::cout << "[ ";
+    for (double i = 0; i < 150; i++)
+    {
+         std::cout << model.Coe[6][0] * CoxDeBoor(i/10, 6,k2, 3) << ",";
+    }
+
+
+    std::cout << "\n ";
+
+    for (double i = 0; i < 150; i++)
+    {
+         std::cout << i/10 << ",";
+    }
+    
     
     
     std::cout << "done :D" << "\n";
