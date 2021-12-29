@@ -144,14 +144,19 @@ std::vector<std::vector<double>> DesignBSplineBasis(std::vector<double> t, uint6
     //Set up matrix with correct dimensions:
     std::vector<std::vector<double>> mat(t.size(), std::vector<double>(k, 0));
 
+    for (int i = 0; i < RealKnots.size(); i++)
+    {
+        std::cout << RealKnots[i] << " ";
+    }
+    
     
 
     //Populate matrix with appropriate elements: 
     for (uint64_t i = 0; i < t.size(); i++)
     {
-        for (uint64_t j = 0; j < k - 1; j++)
+        for (uint64_t j = 0; j < k; j++)
         {
-            mat[i][j] = CoxDeBoor(t[i], j + 1, knots, power);   
+            mat[i][j] = CoxDeBoor(t[i], j +1 , knots, power);   
         }
     }
     mat[t.size() - 1][k-1] = 1;
