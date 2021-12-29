@@ -69,6 +69,18 @@ int main(int argc, char const *argv[])
     }
 
     //Read in data until we hit the end of the file. 
+    //Skip header. 
+    std::getline(data,xVal, ',');
+    std::getline(data,yVal, '\n');
+    if (xVal.find_first_not_of("-1234567890.") == std::string::npos)
+    {
+        std::cout << "warning! check to make sure .csv has column names. " << "\n";
+    }
+    if (yVal.find_first_not_of("-1234567890.") == std::string::npos)
+    {
+        std::cout << "warning! check to make sure .csv has column names. " << "\n";
+    }
+    
     while (data.peek()!= EOF)
     {
 

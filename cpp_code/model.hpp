@@ -270,5 +270,30 @@ void fit(std::vector<double> t, std::vector<double> y){
     }
 };
 
+// class GAM
+// {
+// private:
+//     double Lambda = 0;
+//     double Power  = 3;
+//     std::vector<std::vector>> Coe = {};
+
+// public:
+//     GAM(double Lambda){
+//         /**
+//          * @brief Constructor for a GAM.
+//          * 
+//          */
+//     }
+// };
+
+// GAM::GAM(/* args */)
+// {
+// }
+
+// GAM::~GAM()
+// {
+// }
+
+
 
 

@@ -17,3 +17,77 @@ Following e.g. the SKlean style of statistics model classes, we have a model ins
 
 Plotting code is also provided. 
 
+**Overview:**
+
+Although linear models are often convenient (or even necessary), in realistic applications, whatever function $f(x)$ we are estimating is highly likely to be non-linear. This package contains some basis expansion methods for fitting non-linear models. 
+
+The common theme is that, instead of regressing on our vector of inputs directly, we instead augment or replace each input with a corresponding nonlinear transformation at that point, such that the transformations sum linearly to model target output. 
+
+That is, instead of modelling the relationship as:
+
+$$f(x) = \beta_0 + \beta_1x$$
+
+We construct $M$ nonlinear transformations $b_m(x)$ for each $x$ and $m \leq M$, and model:
+
+$$f(x) = \sum_0^M \beta_m (b_m(x))$$
+
+Where the utility of this approach comes from the fact that, after applying the non-linear transformation, the functions enter the model linearly. This means that the vast array of linear model literature can — in many cases — be adapted to apply to basis expansion methods, a benefit which doesn't appear when using e.g. gradient boosted trees or deep neural networks. 
+
+Additionally, unlike some other machine learning methods, these remain (weakly) convex optimization problems, and so we are assured that, if a solution is recovered, it is a global maxima. 
+
+**Regression Splines**
+
+The first method available here is a regression spline. We split the data along the time axis into $k$ interior knots, and fit a piecewise polynomial between each knot. Additionally, we enforce smoothness constraints such that each successive polynomial has continuous value, first, and second derivatives at each knot point where it meets. We use two different basis construction methods here --- BSplines and Power Basis splines. The BSPlines represent a natural spline basis, in contrast to the Power Basis, which enforces no such boundary constraint. 
+
+*Power Basis*
+
+The power basis representation of a spline is found by augmenting the basis for a polynomial regression problem of that same order with additional basis functions at each not to enforce our continuity constraints.
+
+For some degree $n$ basis with $k$ knots, our basis representation is given by:
+
+
+$$\begin{array}{lll}
+b_{1}(x)=1, & b_{2}(x)=x, & b_{3}(x)=x^{2}, & b_{n}(x) = x^n \\
+\end{array}$$
+
+$$\begin{array}{lll}
+b_{n+1}(x) = \left(x-k_{1} \right)_{+}^{n} , & b_{n+2}(x) = \left(x-k_{2} \right)_{+}^{n}  \\
+\end{array}$$
+
+$$\begin{array}{lll}
+b_{n+k}(x) = \left(x-k_{k} \right)_{+}^{n}  \\
+\end{array}$$
+
+For data in 'input.csv', we can return a power basis regression spline with:
+
+```{bash}
+./splines BSpline power knots
+```
+
+for example, 
+
+```{bash}
+./splines BSpline 3 2
+```
+
+Returns a regression spline with degree $3$ with $2$ knots. The output is given as time series data in 'output.csv'. Example output for the above code is given by:
+
+| t | y |
+| --- | ---|
+|  1    | -0.947246   |
+|  1.1    |  0.320104  |
+|  1.2    |  1.53814  |
+|  1.3    |  2.70769  |
+|   ...   |  ...  |
+
+Which can be automatically plotted with the attached plotting.py file, returning:
+
+
+
+
+
+
+
+
+
+
