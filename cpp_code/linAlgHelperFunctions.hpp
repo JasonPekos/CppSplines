@@ -43,6 +43,21 @@ void PrintMat(std::vector<std::vector<double>> A){
     }
 }
 
+std::vector<double> StripDuplicates(std::vector<double> a){
+    /**
+     * @brief Strip duplicates that are next to eachother from a vector.
+     * 
+     * @param a Input vector
+     * 
+     * @return Input vector without consecutive duplicates. 
+     * 
+     */
+    std::sort(a.begin(), a.end());
+    a.erase(std::unique(a.begin(), a.end()), a.end());
+    std::vector<double> out = a;
+    return(out);
+}
+
 std::vector<std::vector<double>> Design(std::vector<double> t, uint64_t power){
     /**
      * @brief Creates a Vandermonde matrix:
@@ -116,30 +131,31 @@ std::vector<std::vector<double>> DesignBSplineBasis(std::vector<double> t, uint6
      * 
      * @param t Time vector from data of form (t,y)
      * @param power Largest element has degree power - 1.
-     * @param knots Number of knots
+     * @param knots Vector of knot positions. 
+     * @param InteriorKnots Number of interior knots
      * 
      * @return length(t) by j + k corresponding to input data.  
      */
 
     //power = power + 1;
+    std::vector<double> RealKnots = StripDuplicates(knots);
+    uint64_t k = RealKnots.size() + power + 1 - 2;
 
     //Set up matrix with correct dimensions:
-    std::vector<std::vector<double>> mat(t.size(), std::vector<double>(knots.size() - 2*(power) + 1, 0));
-
-    PrintMat(mat);
-
-    std::cout << knots.size()  << "\n";
+    std::vector<std::vector<double>> mat(t.size(), std::vector<double>(k, 0));
 
     
 
     //Populate matrix with appropriate elements: 
     for (uint64_t i = 0; i < t.size(); i++)
     {
-        for (uint64_t j = 0; j < (knots.size() - 2*(power) + 1); j++)
+        for (uint64_t j = 0; j < k - 1; j++)
         {
-            mat[i][j] = CoxDeBoor(t[i], j, knots, power);
+            mat[i][j] = CoxDeBoor(t[i], j + 1, knots, power);   
         }
     }
+    mat[t.size() - 1][k-1] = 1;
+    //mat[t.size() - 1][k-2] = 1;
     return(mat);
 }
 
@@ -378,3 +394,4 @@ bool MatNoNAN(std::vector<std::vector<double>> mat){
     }
     return(1);
 }
+

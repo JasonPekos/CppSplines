@@ -21,7 +21,7 @@ double pm(double x){
 
 double CoxDeBoor(double x, uint64_t index, std::vector<double> knots, uint64_t power){
     /**
-     * @brief Computer the basis spline at x "at" knot 'index' recursively using De Boor's recursion formula (DeBoor 2001)
+     * @brief Compute the basis spline at 'x' at knot 'index' recursively using De Boor's recursion formula (DeBoor 2001)
      * 
      * @param x B_nm(x); basis function at this point
      * @param index Knot index
@@ -77,6 +77,14 @@ double CoxDeBoor(double x, uint64_t index, std::vector<double> knots, uint64_t p
 }
 
 std::vector<double> linspace(double a, double b, double by){
+    /**
+     * @brief linearly spaced points between a,b with spacing 'by'.
+     * 
+     * @param a start point
+     * @param b end point
+     * @param by spacing between points. 
+     * 
+     */
     std::vector<double> out = {};
     double current = a;
 

@@ -133,7 +133,7 @@ void fit(std::vector<double> t, std::vector<double> y){
 
             //Push in padding knots for basis splines. 
             uint64_t tempcounter = 0;
-            while (tempcounter < Power + 1) //Add power + 1 padded knots on each side. 
+            while (tempcounter <= Power + 1) //Add 'power + 1' padded knots on each side. 
             {
                 kTemp.insert(kTemp.begin(), 0);
                 kTemp.push_back(t.back());
@@ -155,7 +155,7 @@ void fit(std::vector<double> t, std::vector<double> y){
         }
         if (MatNoNAN(Coe) == 0)
         {
-            std::cout << "\n \n WARNING: The combination of knots / degrees / input data submitted has resulted in numerical instability."; 
+            std::cout << "\n \n WARNING: The combination of knots / degrees / input data submitted has resulted in numerical instability. "; 
             std::cout << "Model fitting has failed. Recommendation is to reduce knots / power, especially for small datasets. \n \n";
         }
         
