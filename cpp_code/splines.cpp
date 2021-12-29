@@ -149,7 +149,7 @@ int main(int argc, char const *argv[])
 
     std::vector<double> k2 = {0, 0, 0, 0, 2.8, 5.6, 8.4, 11.2, 14, 15, 15, 15, 15};
 
-    std::cout << model.predict(8) << "\n";
+    std::cout << model.predict(14.5) << "\n";
 
 
 

@@ -201,7 +201,7 @@ void fit(std::vector<double> t, std::vector<double> y){
             //Again, sum(coe_n*basisFuction_n (t)) for all n.
             for (uint64_t i = 0; i < Coe.size(); i++)
             {
-                val += Coe[i][0]*CoxDeBoor(t,i, kTemp, Power);
+                val += Coe[i][0]*CoxDeBoor(t,i + 1, kTemp, Power);
             }
         }
 
