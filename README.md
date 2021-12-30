@@ -133,6 +133,9 @@ Which can be automatically plotted with the attached plotting.py file, returning
 
 **Smoothing Splines**
 
+Seeking to avoid questionable heuristics around automatic knot number and location, we assign the maximal number of knots (equal to number of datapoints), and then penalize the parameters on each individual basis function during fitting. 
+
+*Simple penalty:*
 
 
 

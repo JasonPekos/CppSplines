@@ -10,7 +10,6 @@ sns.set_style("white")
 
 
 
-
 dfSpline = pd.read_csv("cpp_code/output.csv")
 dfInput  = pd.read_csv("cpp_code/input.csv")
 

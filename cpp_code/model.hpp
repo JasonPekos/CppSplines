@@ -316,7 +316,7 @@ void fit(std::vector<double> t, std::vector<double> y){
         std::vector<std::vector<double>> XTX = MatMul(Transpose(DesignMatrix), DesignMatrix);
 
         //Add penalty
-        std::vector<std::vector<double>> P = AddDiagPenalty(XTX);
+        std::vector<std::vector<double>> P = AddWigglyPenalty(Lambda, XTX);
 
         
         //Return Coefficients.

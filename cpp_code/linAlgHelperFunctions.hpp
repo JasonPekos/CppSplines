@@ -393,15 +393,23 @@ bool MatNoNAN(std::vector<std::vector<double>> mat){
     return(1);
 }
 
-std::vector<std::vector<double>> Eye(uint64_t size){
+std::vector<std::vector<double>> Eye(uint64_t size1, uint64_t size2){
+    /**
+     * @brief Returns an identity matrix of size 'size1, size2'. Useful for constructing penalization matrices. 
+     * 
+     * @param size Function returns a [size1, size2] identity matrix.
+     * 
+     * @return size1 by size2 identity matrix.
+     * 
+     */
 
     //Create output, populate with zeros.
-    std::vector<std::vector<double>> out(size, std::vector<double>(size, 0));
+    std::vector<std::vector<double>> out(size1, std::vector<double>(size2, 0));
 
     //Add ones along diagonal.
     for (uint64_t i = 0; i < out.size(); i++)
     {
-        for (uint64_t j = 0; j < out.size(); j++)
+        for (uint64_t j = 0; j < out[0].size(); j++)
         {
             if (i == j )
             {
@@ -412,19 +420,69 @@ std::vector<std::vector<double>> Eye(uint64_t size){
     return(out);
 }
 
-std::vector<std::vector<double>> AddDiagPenalty(std::vector<std::vector<double>> B){
+
+std::vector<std::vector<double>> AddWigglyPenalty(double lambda, std::vector<std::vector<double>> B){
+    /**
+     * @brief This function adds a wigglyness penalty to a smoothing spline. The derivation
+     * for this penalty matrix is given in Wood — Generalized Additive Models (2006).
+     * 
+     * It provides a slightly crude approximation to the integral of the second derivative.
+     * 
+     * Issues can arise when data is highly irregularly spaced out, though this was already an issue with smooths,
+     * given automatic knot location.  
+     * 
+     * @param lambda This is the wigglyness parameter for the model, determining how much we let the penalization matrix flatten
+     * our fit. As lambda -> infinity the model becomes linear; as lambda -> 0, the model becomes a perfect cubic spline interpolation. 
+     * 
+     * @param B This is the matrix --- usually XTX in a regression problem --- that we want to penalize. 
+     * 
+     * @return A matrix with dimensions equivalent to B, with the penalty added for a generalized Ridge Regression problem of type:
+     * BetaHat = (XTX + penalty) \ XT y.  
+     * 
+     */
     
     std::vector<std::vector<double>> out = B;
-    std::vector<std::vector<double>> I = Eye(out.size());
 
+    //Initialize a vector of zeroes at the correct size (dimensions given in Wood 2006).
+    std::vector<std::vector<double>> D(B.size() - 2, std::vector<double>(B.size(), 0)); 
+
+    for (uint64_t i = 0; i < D.size(); i++)
+    {
+        for (uint64_t j = 0; j < D[0].size(); j++)
+        {
+            if (i == j)
+            {
+                //Add one along the diagonal.
+                D[i][j] = 1;
+            }
+            if (i + 1 == j)
+            {
+                //Add -2 on the first off diagonal.
+                D[i][j] = -2;
+            }
+            if (i + 2 == j)
+            {
+                //Add 1 on the second off diagonal.
+                D[i][j] = 1;
+            }
+        }
+    }
+
+    //Matrix multiplication to recover S = DTD.
+    D = MatMul(Transpose(D), D);
+
+    //Add penalty to input matrix. 
     for (uint64_t i = 0; i < out.size(); i++)
     {
         for (uint64_t j = 0; j < out.size(); j++)
         {
-            out[i][j] = I[i][j];
+            out[i][j] += pow(lambda,2) * D[i][j];
         }
     }
 
+    //Returns (Input + lambda^2 DTD).
     return(out);
 }
+
+
 

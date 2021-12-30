@@ -36,7 +36,7 @@ int main(int argc, char const *argv[])
     //Add parameters from command line arguments. 
     if (method == SMS)
     {
-        lambda = 2;
+        lambda = 0.2;
     }
     
     if (method != SMS)
@@ -184,7 +184,7 @@ int main(int argc, char const *argv[])
 
     modelSmooth.fit(t,y);
 
-    PrintMat(modelSmooth.Coe);
+
 
     //PrintMat(model.Coe); Uncomment to return model coefficient values. For testing / debugging. 
     return 0;
