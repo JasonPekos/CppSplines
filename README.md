@@ -127,7 +127,7 @@ Returns a regression spline with degree $3$ with $6$ interior knots. The output 
 Which can be automatically plotted with the attached plotting.py file, returning:
 
 
-![plotone](https://raw.githubusercontent.com/JasonPekos/CppSplines/main/images/BSpline36.png)
+![plottwo](https://raw.githubusercontent.com/JasonPekos/CppSplines/main/images/BSpline36.png)
 
 
 
@@ -151,7 +151,40 @@ for example,
 ./splines Smooth 0.4
 ```
 
-Returns a smooth with wigglyness parameter lambda. 
+Returns a smooth with wiggliness parameter lambda. 
+
+
+| t | y |
+| --- | ---|
+|  1    | -0.00671362   |
+|  1.1    |  1,0.920172  |
+|  1.2    |  1.82914  |
+|  1.3    | 2.72146  |
+|   ...   |  ...  |
+
+Which can be automatically plotted with the attached plotting.py file, returning:
+
+![plotthree](https://raw.githubusercontent.com/JasonPekos/CppSplines/main/images/Smooth05.png)
+
+**Automatic Determination of Lambda**
+
+Page 170, Simon Wood book. 
+
+
+including any relevant equations, algorithms, and concepts
+
+**Need:**
+
+- Gauss Elim
+- Regression Derivations 
+-  .calclambda method in smooth spline
+- matrix class??? (requires substantial code re-writes)
+- 
+- 
+
+
+
+
 
 
 
