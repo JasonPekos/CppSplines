@@ -58,16 +58,18 @@ $$\begin{array}{lll}
 b_{n+k}(x) = \left(x-k_{k} \right)_{+}^{n}  \\
 \end{array}$$
 
+Where $(x)_+$ is zero if $x$ is negative, and $x$ otherwise. 
+
 For data in 'input.csv', we can return a power basis regression spline with:
 
 ```{bash}
-./splines BSpline power knots
+./splines PowerBasis power knots
 ```
 
 for example, 
 
 ```{bash}
-./splines BSpline 3 2
+./splines PowerBasis 3 2
 ```
 
 Returns a regression spline with degree $3$ with $2$ knots. The output is given as time series data in 'output.csv'. Example output for the above code is given by:
@@ -81,6 +83,53 @@ Returns a regression spline with degree $3$ with $2$ knots. The output is given 
 |   ...   |  ...  |
 
 Which can be automatically plotted with the attached plotting.py file, returning:
+
+![plotone](https://raw.githubusercontent.com/JasonPekos/CppSplines/main/images/PowerBasis32.png)
+
+(using the default input.csv provided as data).
+
+Notes:
+
+- Asking for more knots than datapoints probably won't, for nearly all data structure. 
+
+- Longer computations should use B-Splines instead. 
+
+*B-Splines*
+
+Although computationally simple, the power basis provided above has numerous undesirable numerical properties --- specifically, they require the computation of large numbers, which can lead to rounding problems. To solve this issue, we turn towards an alternative basis construction which can span the same set of functions as a clamped power basis. 
+
+Basis spline are wonderful in that they provide local support, and are much more well behaved numerically. 
+
+Unlike the power basis, higher order basis functions have no simple closed form, and must be represented as the iterative convolution of lower order basis functions, where the $0$th order is an indicator function on successive knots.
+
+For data in 'input.csv', we can return a power B-spline regression spline with:
+
+```{bash}
+./splines BSpline power knots
+```
+
+for example, 
+
+```{bash}
+./splines BSpline 3 6
+```
+
+Returns a regression spline with degree $3$ with $6$ interior knots. The output is given as time series data in 'output.csv'. Example output for the above code is given by:
+
+| t | y |
+| --- | ---|
+|  1    | 0.993459   |
+|  1.1    |  -1.38922  |
+|  1.2    |  -2.93915  |
+|  1.3    | -3.74152  |
+|   ...   |  ...  |
+
+Which can be automatically plotted with the attached plotting.py file, returning:
+
+
+
+**Smoothing Splines**
+
 
 
 
