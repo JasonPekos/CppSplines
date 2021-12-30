@@ -273,12 +273,13 @@ void fit(std::vector<double> t, std::vector<double> y){
 class GAM
 {
 private:
-    double Lambda = 0;
     uint64_t Power  = 3;
     std::vector<double> kTemp = {};
 
 public:
+    double Lambda = 0;
     std::vector<std::vector<double>> Coe{1,std::vector<double>(1,0)};
+    double CrossValScore = 100;
 
 void fit(std::vector<double> t, std::vector<double> y){
     /**
@@ -356,6 +357,57 @@ void fit(std::vector<double> t, std::vector<double> y){
         }
         
         return(val);
+    }
+
+    void GCV(std::vector<double> t, std::vector<double> y){
+        fit(t,y);
+
+        double GCV = 0;
+        std::vector<double> yDiff = {};
+        std::vector<double> yHatDiff = {};
+
+        //Numerator.
+        for (uint64_t i = 0; i < y.size(); i++)
+        {
+            GCV += y.size()*pow((y[i] - predict(t[i])),2);
+        }
+
+        //Difference Vectors.
+        for (uint64_t i = 0; i < y.size(); i++)
+        {
+            yDiff.push_back(y[i+1] - y[i]);
+            yHatDiff.push_back(predict(t[i+1]) - predict(t[i]));
+        }
+
+        double CrudeTrace = 0;
+
+        for (uint64_t i = 0; i < yDiff.size(); i++)
+        {
+            CrudeTrace += (yHatDiff[i] / yDiff[i]);
+            std::cout << CrudeTrace << " ";
+        }
+        
+        GCV = GCV / pow((y.size() - CrudeTrace),2);
+
+        CrossValScore = GCV;
+    }
+
+    void seekLambda(std::vector<double> t, std::vector<double> y){
+        std::vector<double> tempLambda = {};
+        for (double i = 1; i < 100; i++)
+        {
+            Lambda = 1/i;
+            GCV(t,y);
+            tempLambda.push_back(CrossValScore);
+            std::cout << i << "| GCV: " << CrossValScore << "\n";
+        }
+
+        std::vector<double>::iterator iter = std::min_element(std::begin(tempLambda), std::end(tempLambda));
+        int64_t index = std::distance(std::begin(tempLambda), iter);
+
+
+
+        Lambda = 1/index;
     }
 
 

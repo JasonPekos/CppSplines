@@ -37,7 +37,7 @@ int main(int argc, char const *argv[])
     //Add parameters from command line arguments. 
     if (method == SMS)
     {
-        std::string Auto  = "Auto";
+        std::string Auto  = "auto";
         std::string Arg2(argv[2]);
 
         if (Arg2 == Auto)
@@ -161,8 +161,8 @@ int main(int argc, char const *argv[])
 
     if(method != SMS)
     {
-        //delete model;
         Spline model(method, power, knots);
+
         model.fit(t,y);
         for (uint64_t i = 0; i < xTemp.size(); i++)
         {
@@ -173,6 +173,13 @@ int main(int argc, char const *argv[])
     else
     {
         GAM model(lambda);
+
+        if (autoFlag == 1)
+        {
+            model.seekLambda(t,y);
+            std::cout << "Recovered Lambda: "<< model.Lambda << "\n";
+        }
+
         model.fit(t,y);
         for (uint64_t i = 0; i < xTemp.size(); i++)
         {
@@ -189,6 +196,8 @@ int main(int argc, char const *argv[])
     
     output.close();
     std::cout << "output.csv updated \n"; //
+
+    
 
 
 

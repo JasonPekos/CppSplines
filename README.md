@@ -168,10 +168,46 @@ Which can be automatically plotted with the attached plotting.py file, returning
 
 **Automatic Determination of Lambda**
 
-Page 170, Simon Wood book. 
+Our main concern in this case is one of overfitting — to avoid this, we need to choose lambda such that our model is not overly smooth (maximal bias), and not overly sensitive to individual data (maximal variance). 
+
+Attempt to select lambda by hand can work, but ideally we'd like some sort of automatic criteria to select lambda such that we avoid overfitting on the data. 
+
+The standard approach is to use some sort of cross validation, portioning the data into different train and test sets to test generalization error. 
+
+Here we use Leave One Out cross validation, fitting the data to everything except for one data point, and then testing our performance on that one datapoint, iterating over all the data. That is, for $\hat f^{[-1]}_i $ — the model fit to all data except $y_i$ — we calculate:
+
+$$\mathcal{V}_{o}=\frac{1}{n} \sum_{i=1}^{n}\left(\hat{f}_{i}^{[-i]}-y_{i}\right)^{2}$$
+
+(Wood 2006), seeking to select lambda such that we minimize $V_0$. Refitting the model for $n$ datapoints would be computationally intensive. To avoid this, Wood shows:
+
+$$\mathcal{V}_{o}=\frac{1}{n} \sum_{i=1}^{n}\left(y_{i}-\hat{f}_{i}\right)^{2} /\left(1-A_{i i}\right)^{2}$$
+
+Deriving the _general cross validation score_:
+
+$$\mathcal{V}_{g}=\frac{n \sum_{i=1}^{n}\left(y_{i}-\hat{f}_{i}\right)^{2}}{[n-\operatorname{tr}(\mathbf{A})]^{2}}$$
+
+Where $A$ is the influence matrix and $\hat f$ is the estimate from fitting all the data. 
+
+To simplify computation further, we use approximations to the trace given in Ye (1998), and loop over the range of $\lambda$ values we care about, recovering the value which minimizes $\mathcal{V}_{g}$.
+
+To use this method, request 'auto' as the lambda parameter, e.g.
+
+```{bash}
+./splines Smooth auto
+```
+
+_Note:_ Although this is computationally much cheaper than calculating a new smooth for each datapoint, this is still extremely costly, and will take a while computationally. 
 
 
-including any relevant equations, algorithms, and concepts
+
+
+
+
+
+
+
+
+
 
 **Need:**
 
@@ -179,7 +215,7 @@ including any relevant equations, algorithms, and concepts
 - Regression Derivations 
 -  .calclambda method in smooth spline
 - matrix class??? (requires substantial code re-writes)
-- 
+- Polynomial regression
 - 
 
 

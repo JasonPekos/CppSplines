@@ -485,4 +485,3 @@ std::vector<std::vector<double>> AddWigglyPenalty(double lambda, std::vector<std
 }
 
 
-

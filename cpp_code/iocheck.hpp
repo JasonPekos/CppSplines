@@ -40,6 +40,7 @@ int InputCheck(int argc, const char** argv){
             std::cout << "Warning: extra parameters submitted. \n";
         }
         std::string Arg2(argv[2]);
+        std::string Auto = "auto";
 
         if (Arg2.find_first_not_of("1234567890.") != std::string::npos && Arg2 != Auto)
         {
