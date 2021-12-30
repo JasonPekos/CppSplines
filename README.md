@@ -142,14 +142,16 @@ for basis function $f$.
 For data in 'input.csv', we can return a B-spline smooth with:
 
 ```{bash}
-./splines PowerBasis power knots
+./splines Smooth lambda
 ```
 
 for example, 
 
 ```{bash}
-./splines PowerBasis 3 2
+./splines Smooth 0.4
 ```
+
+Returns a smooth with wigglyness parameter lambda. 
 
 
 
