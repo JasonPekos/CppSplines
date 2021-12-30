@@ -21,26 +21,31 @@ int main(int argc, char const *argv[])
     //Method CL argument into string. 
     std::string method(argv[1]);
 
-    //In the case of no knot points being provided, simply use the un-augmented polynomial regression function. 
-    if (InputCheck(argc, argv) == 2)
-    {
-        method = "PolynomialRegression"; //If we don't have any knot points, just use PNR as the default. 
-    }
-
     //Bring over knots and power CL arguments.
-    std::string Arg2(argv[2]);
+
 
     std::string PNR  = "PolynomialRegression";
     std::string BSP  = "BSpline";
     std::string PSP  = "PowerBasis";
+    std::string SMS  = "Smooth";
     
 
-    //Case to fixed width values. 
-    uint64_t power = (uint64_t)stoi(Arg2);
     uint64_t knots = 0;
+    uint64_t power = 3;
+    double   lambda = 2;
+    //Add parameters from command line arguments. 
+    if (method == SMS)
+    {
+        lambda = 2;
+    }
+    
+    if (method != SMS)
+    {
+        std::string Arg2(argv[2]);
+        power = (uint64_t)stoi(Arg2);
+    }
 
-
-    if (method != PNR)
+    if (method != PNR && method != SMS)
     {
         std::string Arg3(argv[3]);
         knots = (uint64_t)stoi(Arg3);
@@ -117,20 +122,14 @@ int main(int argc, char const *argv[])
    }
    
 
-    //Fit model
-    Spline model(method, power, knots);
-    model.fit(t,y);
 
+
+
+    //Fit model
+ 
     //Temp vectors to hold predictions. 
     std::vector<double> xTemp = linspace(t[0],t.back(), 0.1); //Model output.
     std::vector<double> modelTemp = {}; //Model output.
-
-    //Predict values at each timepoint in our initial dataset. 
-    for (uint64_t i = 0; i < xTemp.size(); i++)
-    {
-        modelTemp.push_back(model.predict(xTemp[i]));
-    }
-    
 
     /* 
     FILE OUTPUT
@@ -147,6 +146,29 @@ int main(int argc, char const *argv[])
     output << "y";
     output << '\n';
 
+
+
+    if(method != SMS)
+    {
+        //delete model;
+        Spline model(method, power, knots);
+        model.fit(t,y);
+        for (uint64_t i = 0; i < xTemp.size(); i++)
+        {
+            modelTemp.push_back(model.predict(xTemp[i]));
+        }
+    
+    }
+    else
+    {
+        GAM model(lambda);
+        model.fit(t,y);
+        for (uint64_t i = 0; i < xTemp.size(); i++)
+        {
+            modelTemp.push_back(model.predict(xTemp[i]));
+        }
+    }
+
     //Populate .CSV.
     for (uint64_t i = 0; i < modelTemp.size(); i++)
     {
@@ -156,6 +178,13 @@ int main(int argc, char const *argv[])
     
     output.close();
     std::cout << "output.csv updated \n"; //
+
+
+    GAM modelSmooth(2);
+
+    modelSmooth.fit(t,y);
+
+    PrintMat(modelSmooth.Coe);
 
     //PrintMat(model.Coe); Uncomment to return model coefficient values. For testing / debugging. 
     return 0;

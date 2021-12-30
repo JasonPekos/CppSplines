@@ -15,13 +15,13 @@ int InputCheck(int argc, const char** argv){
      * 
      */
     
-    if (argc < 3) // Checks to make sure we have at least three arguments.
+
+
+    if (argc < 2) // Checks to make sure we have at least ONE argument.
     {
         std::cout << "There is an issue here with the number of parameters submitted — ";
-        std::cout << "the minimum number of parameters for any procedure is 2 \n";
-        std::cout << "\n Parameter One: Method (e.g PolynomialRegression) \n";
-        std::cout << " Parameter Two: degree of spline basis (e.g. 3)\n";
-        std::cout << " Parameter Three (for BSpline and PowerBasis Spline): knots (e.g. 2) \n";
+        std::cout << "the minimum number of parameters for any procedure is 1 \n";
+        std::cout << "e.g. arg1: Smooth — please submit at least one argument \n";
         return(0);
     }
 
@@ -30,7 +30,27 @@ int InputCheck(int argc, const char** argv){
     std::string PNR  = "PolynomialRegression";
     std::string BSP  = "BSpline";
     std::string PSP  = "PowerBasis";
+    std::string SMS  = "Smooth";
 
+    if (method == SMS)
+    {
+        if (argc > 2)
+        {
+            std::cout << "Warning: extra parameters submitted. \n";
+        }
+        return(1);
+    }
+    
+
+    if (argc < 4) // Checks to make sure we have at least three arguments.
+    {
+        std::cout << "There is an issue here with the number of parameters submitted — ";
+        std::cout << "the minimum number of parameters for any procedure other than Smooth is 2 \n";
+        std::cout << "\n Parameter One: Method (e.g PolynomialRegression) \n";
+        std::cout << " Parameter Two: degree of spline basis (e.g. 3)\n";
+        std::cout << " Parameter Three (for BSpline and PowerBasis Spline): knots (e.g. 2) \n";
+        return(0);
+    }
 
     /*
     Check if input parameters are numbers where they should be 
@@ -38,7 +58,7 @@ int InputCheck(int argc, const char** argv){
     */
     std::string Arg2(argv[2]);
 
-    if (method != PNR)
+    if (method != PNR && method != SMS)
     {
         if (argc < 4) // Checks to make sure we have at least three arguments.
         {

@@ -393,3 +393,38 @@ bool MatNoNAN(std::vector<std::vector<double>> mat){
     return(1);
 }
 
+std::vector<std::vector<double>> Eye(uint64_t size){
+
+    //Create output, populate with zeros.
+    std::vector<std::vector<double>> out(size, std::vector<double>(size, 0));
+
+    //Add ones along diagonal.
+    for (uint64_t i = 0; i < out.size(); i++)
+    {
+        for (uint64_t j = 0; j < out.size(); j++)
+        {
+            if (i == j )
+            {
+                out[i][j] = 1;
+            }
+        }       
+    }
+    return(out);
+}
+
+std::vector<std::vector<double>> AddDiagPenalty(std::vector<std::vector<double>> B){
+    
+    std::vector<std::vector<double>> out = B;
+    std::vector<std::vector<double>> I = Eye(out.size());
+
+    for (uint64_t i = 0; i < out.size(); i++)
+    {
+        for (uint64_t j = 0; j < out.size(); j++)
+        {
+            out[i][j] = I[i][j];
+        }
+    }
+
+    return(out);
+}
+

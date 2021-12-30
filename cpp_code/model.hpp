@@ -270,29 +270,105 @@ void fit(std::vector<double> t, std::vector<double> y){
     }
 };
 
-// class GAM
-// {
-// private:
-//     double Lambda = 0;
-//     double Power  = 3;
-//     std::vector<std::vector>> Coe = {};
+class GAM
+{
+private:
+    double Lambda = 0;
+    uint64_t Power  = 3;
+    std::vector<double> kTemp = {};
 
-// public:
-//     GAM(double Lambda){
-//         /**
-//          * @brief Constructor for a GAM.
-//          * 
-//          */
-//     }
-// };
+public:
+    std::vector<std::vector<double>> Coe{1,std::vector<double>(1,0)};
 
-// GAM::GAM(/* args */)
-// {
-// }
+void fit(std::vector<double> t, std::vector<double> y){
+    /**
+     * @brief Fit the model on data (t,y).
+     * 
+     * Uses the closed form solutions: Coefficients = (XT*X + Lambda * Omega)^-1 * XT*y
+     * 
+     * Solved using Gaussian Elimination with Back Substitution instead of a matrix inverse, 
+     * as numerical computation of the inverse is ill-conditioned. 
+     * 
+     */
+   
+        //Empty out the knot positions vector, so we can push into the back safely. 
+        kTemp = {}; 
 
-// GAM::~GAM()
-// {
-// }
+        //Add a knot at each datapoint except for the boundary. 
+        for (uint64_t i = 1; i < t.size(); i++)
+        {
+            kTemp.push_back(t[i]);
+        }
+
+        //Push in padding knots for basis splines. 
+        uint64_t tempcounter = 0;
+        while (tempcounter <= Power + 1) //Add 'power + 1' padded knots on each side. 
+        {
+            kTemp.insert(kTemp.begin(), 0);
+            kTemp.push_back(t.back());
+            tempcounter +=1;
+        }
+
+        //Create the design matrix for this program using the LinAlg function. 
+        std::vector<std::vector<double>> DesignMatrix = DesignBSplineBasis(t, Power, kTemp);
+
+        //Multiply XTX
+        std::vector<std::vector<double>> XTX = MatMul(Transpose(DesignMatrix), DesignMatrix);
+
+        //Add penalty
+        std::vector<std::vector<double>> P = AddDiagPenalty(XTX);
+
+        
+        //Return Coefficients.
+        Coe = SolveSystem(P, MatVecMul(Transpose(DesignMatrix), y));
+    
+        if (MatNoNAN(Coe) == 0)
+        {
+            /*
+            Some combinations of data / basis representation / knot amount can lead to perfectly multicolinear columns,
+            and therefore NaNs after we try to solve the system. The resulting system cannot be plotted, so we 
+            throw a warning here, and let the user know model fitting has failed. 
+
+            We still save the coefficient matrix because the position of the NaNs can be informative. 
+            */
+            std::cout << "\n \n WARNING: The combination of knots / degrees / input data submitted has resulted in numerical instability. "; 
+            std::cout << "Model fitting has failed. Recommendation is to reduce knots / power, especially for small datasets. \n \n";
+        }        
+    }
+
+    double predict(double t){
+        /**
+         * @brief Predict output given model + input
+         * 
+         * @param t Value we need to predict at, e.g. return Model(t)
+         * 
+         * -> sum(coe_n*basisFuction_n (t)) for all n. 
+         * 
+         */
+
+        //Define value we sum into. 
+        double val = 0;
+
+        //Again, sum(coe_n*basisFuction_n (t)) for all n.
+        for (uint64_t i = 0; i < Coe.size(); i++)
+        {
+            val += Coe[i][0]*CoxDeBoor(t,i + 1, kTemp, Power);
+        }
+        
+        return(val);
+    }
+
+
+
+    GAM(double lambda){
+        /**
+         * @brief Constructor for a GAM.
+         * 
+         */
+        Lambda = lambda;
+    }
+};
+
 
 
 

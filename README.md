@@ -127,8 +127,13 @@ Returns a regression spline with degree $3$ with $6$ interior knots. The output 
 Which can be automatically plotted with the attached plotting.py file, returning:
 
 
+![plotone](https://raw.githubusercontent.com/JasonPekos/CppSplines/main/images/BSpline36.png)
+
+
 
 **Smoothing Splines**
+
+
 
 
 
