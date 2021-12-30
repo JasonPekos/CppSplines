@@ -90,7 +90,7 @@ Which can be automatically plotted with the attached plotting.py file, returning
 
 Notes:
 
-- Asking for more knots than datapoints probably won't, for nearly all data structure. 
+- Asking for more knots than datapoints probably won't work, for nearly all data structure. The program will throw a warning when fitting, and let you know if something went wrong.
 
 - Longer computations should use B-Splines instead. 
 
@@ -98,7 +98,7 @@ Notes:
 
 Although computationally simple, the power basis provided above has numerous undesirable numerical properties --- specifically, they require the computation of large numbers, which can lead to rounding problems. To solve this issue, we turn towards an alternative basis construction which can span the same set of functions as a clamped power basis. 
 
-Basis spline are wonderful in that they provide local support, and are much more well behaved numerically. 
+Basis spline are also wonderful in that they provide local support --- avoiding colinearity issues --- and are therefore much more well behaved numerically. 
 
 Unlike the power basis, higher order basis functions have no simple closed form, and must be represented as the iterative convolution of lower order basis functions, where the $0$th order is an indicator function on successive knots.
 
@@ -133,10 +133,23 @@ Which can be automatically plotted with the attached plotting.py file, returning
 
 **Smoothing Splines**
 
-Seeking to avoid questionable heuristics around automatic knot number and location, we assign the maximal number of knots (equal to number of datapoints), and then penalize the parameters on each individual basis function during fitting. 
+Seeking to avoid questionable heuristics around automatic knot number and location, we assign the maximal number of knots (equal to number of data points), and then penalize the parameters on each individual basis function during fitting. Keeping with tradition, we penalize wigglyness, given by:
 
-*Simple penalty:*
+$$\lambda \int f^{\prime \prime}(x)^{2} d x$$
 
+for basis function $f$. 
+
+For data in 'input.csv', we can return a B-spline smooth with:
+
+```{bash}
+./splines PowerBasis power knots
+```
+
+for example, 
+
+```{bash}
+./splines PowerBasis 3 2
+```
 
 
 

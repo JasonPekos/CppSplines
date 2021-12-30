@@ -444,7 +444,7 @@ std::vector<std::vector<double>> AddWigglyPenalty(double lambda, std::vector<std
     std::vector<std::vector<double>> out = B;
 
     //Initialize a vector of zeroes at the correct size (dimensions given in Wood 2006).
-    std::vector<std::vector<double>> D(B.size() - 2, std::vector<double>(B.size(), 0)); 
+    std::vector<std::vector<double>> D = Eye(B.size() - 2, B.size());
 
     for (uint64_t i = 0; i < D.size(); i++)
     {

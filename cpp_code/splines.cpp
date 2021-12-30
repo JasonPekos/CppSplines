@@ -33,10 +33,21 @@ int main(int argc, char const *argv[])
     uint64_t knots = 0;
     uint64_t power = 3;
     double   lambda = 2;
+    bool autoFlag = 0;
     //Add parameters from command line arguments. 
     if (method == SMS)
     {
-        lambda = 0.2;
+        std::string Auto  = "Auto";
+        std::string Arg2(argv[2]);
+
+        if (Arg2 == Auto)
+        {
+            autoFlag = 1;
+        }
+        else
+        {
+            lambda = stod(Arg2);
+        }
     }
     
     if (method != SMS)
@@ -179,10 +190,6 @@ int main(int argc, char const *argv[])
     output.close();
     std::cout << "output.csv updated \n"; //
 
-
-    GAM modelSmooth(2);
-
-    modelSmooth.fit(t,y);
 
 
 
