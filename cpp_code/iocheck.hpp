@@ -1,10 +1,9 @@
-#include<iostream>   // Error messages. 
-#include<string>     //String processing.
+#include <iostream> // Error messages.
+#include <string>   //String processing.
 #pragma once
 
-
-
-int InputCheck(int argc, const char** argv){
+int InputCheck(int argc, const char **argv)
+{
 
     /**
      * @brief This function checks all the inputs except the validity of the methods used.
@@ -14,24 +13,22 @@ int InputCheck(int argc, const char** argv){
      * @param argv arguments character pointer, standard from C++ main() call when using input at command lin
      * 
      */
-    
-
 
     if (argc < 2) // Checks to make sure we have at least ONE argument.
     {
         std::cout << "There is an issue here with the number of parameters submitted — ";
         std::cout << "the minimum number of parameters for any procedure is 1 \n";
         std::cout << "e.g. arg1: Smooth — please submit at least one argument \n";
-        return(0);
+        return (0);
     }
 
     //Read in method string because we need to check against method to see what we need to look at next.
     std::string method(argv[1]);
-    std::string PNR  = "PolynomialRegression";
-    std::string BSP  = "BSpline";
-    std::string PSP  = "PowerBasis";
-    std::string SMS  = "Smooth";
-    std::string Auto  = "Auto";
+    std::string PNR = "PolynomialRegression";
+    std::string BSP = "BSpline";
+    std::string PSP = "PowerBasis";
+    std::string SMS = "Smooth";
+    std::string Auto = "Auto";
 
     if (method == SMS)
     {
@@ -44,12 +41,12 @@ int InputCheck(int argc, const char** argv){
 
         if (Arg2.find_first_not_of("1234567890.") != std::string::npos && Arg2 != Auto)
         {
-            std::cout << "Error, lambda must be a positive integer." << "\n";
+            std::cout << "Error, lambda must be a positive integer."
+                      << "\n";
         }
-        
-        return(1);
+
+        return (1);
     }
-    
 
     if (argc < 4) // Checks to make sure we have at least three arguments.
     {
@@ -58,7 +55,7 @@ int InputCheck(int argc, const char** argv){
         std::cout << "\n Parameter One: Method (e.g PolynomialRegression) \n";
         std::cout << " Parameter Two: degree of spline basis (e.g. 3)\n";
         std::cout << " Parameter Three (for BSpline and PowerBasis Spline): knots (e.g. 2) \n";
-        return(0);
+        return (0);
     }
 
     /*
@@ -76,23 +73,22 @@ int InputCheck(int argc, const char** argv){
             std::cout << "\n Parameter One: Method (e.g BSpline) \n";
             std::cout << " Parameter Two: degree of spline basis (e.g. 3)\n";
             std::cout << " Parameter Three (for BSpline and PowerBasis Spline): knots (e.g. 2) \n";
-            return(0);
+            return (0);
         }
         std::string Arg3(argv[3]);
         if (Arg3.find_first_not_of("1234567890") != std::string::npos)
         {
             std::cout << "Error: Please submit a positive integer as argument three.\n";
-            return(0);
+            return (0);
         }
     }
-    
-    if (Arg2.find_first_not_of("1234567890") != std::string::npos) //Check to make sure arg two (power) is a positive integer. 
+
+    if (Arg2.find_first_not_of("1234567890") != std::string::npos) //Check to make sure arg two (power) is a positive integer.
     {
         std::cout << "Error: Please submit a positive integer as argument two.\n";
-        return(0);
+        return (0);
     }
 
-    
     //Check  arguments for possible errors and warnings.
     if (method != PNR)
     {
@@ -100,32 +96,33 @@ int InputCheck(int argc, const char** argv){
         {
             if (method != BSP)
             {
-                std::cout << "Please submit a valid method (e.g. PolynomialRegression)" << "\n";
+                std::cout << "Please submit a valid method (e.g. PolynomialRegression)"
+                          << "\n";
                 exit(-1);
-            } 
+            }
         }
     }
-    else if (atof(argv[2]) > 100) //Splines of degree this large are very dumb. 
+    else if (atof(argv[2]) > 100) //Splines of degree this large are very dumb.
     {
         std::cout << "You have submitted an unreasonably large power value. ";
         std::cout << "The code will run, and this is mathematically well defined but please ";
         std::cout << "consider trying a smaller value --- splines of degree three are standard! \n";
         //return(0);
     }
-    else if (atof(argv[2]) < 1) 
+    else if (atof(argv[2]) < 1)
     {
         std::cout << "IO Warning: You have submitted an unreasonably small power value. ";
         std::cout << "Please supply a value greater than zero. \n";
-        return(0);
+        return (0);
     }
-    else if (method != PNR) //Check number of knots submitted. 
+    else if (method != PNR) //Check number of knots submitted.
     {
         if (atof(argv[3]) == 0)
         {
             std::cout << "IO Warning: zero knots submitted!\n";
             std::cout << "Changing to polynomial regression. \n";
-            return(2);
+            return (2);
         }
     }
-    return(1);
+    return (1);
 }

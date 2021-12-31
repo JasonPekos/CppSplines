@@ -1,3 +1,32 @@
+/**
+ * @file linAlgHelperFunctions.hpp
+ * @author Jason Pekos
+ * @brief This file contains linear algebra helper functions to help with various computations:
+ * 
+ * 1.  PrintMat: prints a given matrix (vector of vectors) to the terminal.
+ * 2.  Design: Creates a Vandermone matrix 
+ * 3.  Transpose: Return matrix transpose
+ * 4.  MatMul: Matrix multiplication
+ * 5.  MatVecMul: Matrix-Vector multiplication + standardizing type.
+ * 6.  TriLCheck: Check if a matrix is upper triangular. 
+ * 7.  SolveSystem: Solve a linear system using reduction to Row Echelon form and then back substitution.
+ * 8.  StripDuplicates: Strip duplicates that are next to eachother from a vector.
+ * 9.  DesignPowerBasis: Vandermonde style design matrix for a power basis problem.
+ * 10. DesignBSplineBasis: Vandermonde style design matrix for a BSpline problem.
+ * 11. NotNAN / MatNotNAN: NAN checking for use in regression splines.
+ * 12. AddWigglyPenalty: Add the penalty — lambda^2 \int f''(x) dx — to a regression problem.
+ * 14. Eye: Create identity matrix.
+ * 13. IsEye: Check if a matrix is the identity matrix.
+ * 14. Inverse: Invert a matrix.
+ * 15. Trace: Find the trace of a matrix.
+ * 16. TraceHatMatrix: Find the trace of a hat matrix in the context of a GAM problem.
+ * 
+ * @version 0.1
+ * @date 2021-12-31
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
 #include <vector>
 #include <string>
 #include <iostream>
@@ -6,20 +35,8 @@
 
 #pragma once
 
-/*
-This file contains linear algebra helper functions to help with various computations:
-
-1. PrintMat: prints a given matrix (vector of vectors) to the terminal.
-2. Design: Creates a Vandermone matrix 
-3. Transpose: Return matrix transpose
-4. MatMul: Matrix multiplication
-5. MatVecMul: Matrix-Vector multiplication + standardizing type.
-6. TriLCheck: Check if a matrix is upper triangular. 
-7. SolveSystem: Solve a linear system using reduction to Row Echelon form and then back substitution.
-*/
-
-
-void PrintMat(std::vector<std::vector<double>> A){
+void PrintMat(std::vector<std::vector<double>> A)
+{
     /**
      * @brief This function prints a matrix to the terminal for troubleshooting.
      * 
@@ -28,37 +45,44 @@ void PrintMat(std::vector<std::vector<double>> A){
      */
 
     //This is here to break up different print calls.
-    std::cout << "requested matrix:" << "\n";  
+    std::cout << "requested matrix:"
+              << "\n";
 
-    //For each row, print every column, and then advance. 
-    for (uint64_t i = 0; i < A.size(); i++) 
+    //For each row, print every column, and then advance.
+    for (uint64_t i = 0; i < A.size(); i++)
     {
         for (uint64_t j = 0; j < A[1].size(); j++)
         {
-            std::cout << A[i][j] << " "; 
-        }   
+            std::cout << A[i][j] << " ";
+        }
 
-    //New line for formatting.
-    std::cout << "\n";  
+        //New line for formatting.
+        std::cout << "\n";
     }
 }
 
-std::vector<double> StripDuplicates(std::vector<double> a){
+std::vector<double> StripDuplicates(std::vector<double> a)
+{
     /**
      * @brief Strip duplicates that are next to eachother from a vector.
      * 
      * @param a Input vector
-     * 
+     *
      * @return Input vector without consecutive duplicates. 
      * 
      */
+
+    //call sort with iterators. we are using this for knot vectors, so they ought to be sorted anyways. 
     std::sort(a.begin(), a.end());
+
+    //strip duplicates. 
     a.erase(std::unique(a.begin(), a.end()), a.end());
     std::vector<double> out = a;
-    return(out);
+    return (out);
 }
 
-std::vector<std::vector<double>> Design(std::vector<double> t, uint64_t power){
+std::vector<std::vector<double>> Design(std::vector<double> t, uint64_t power)
+{
     /**
      * @brief Creates a Vandermonde matrix:
      * 
@@ -74,26 +98,24 @@ std::vector<std::vector<double>> Design(std::vector<double> t, uint64_t power){
 
     power = power + 1;
     //Set up matrix with correct dimensions:
-    std::vector<std::vector<double>> mat(t.size(), std::vector<double>(power)); 
+    std::vector<std::vector<double>> mat(t.size(), std::vector<double>(power));
 
     //Populate matrix with appropriate elements: mat_i,j = t_i^{j-1}
     for (uint64_t i = 0; i < t.size(); i++)
     {
         for (uint64_t j = 0; j < power; j++)
         {
-            mat[i][j] = pow(t[i],j);
+            mat[i][j] = pow(t[i], j);
         }
-        
     }
-    return(mat);
+    return (mat);
 }
 
-std::vector<std::vector<double>> DesignPowerBasis(std::vector<double> t, uint64_t power, std::vector<double> knots){
+std::vector<std::vector<double>> DesignPowerBasis(std::vector<double> t, uint64_t power, std::vector<double> knots)
+{
     /**
-     * @brief Creates a design matrix for fitting a power basis spline of the nth order:
-     * 
-     * 
-     * For fitting polynomial regression models. 
+     * @brief Creates a design matrix for fitting a power basis spline of the nth order.
+     * Used primarily for fitting power basis regression models. 
      * 
      * @param t Time vector from data of form (t,y)
      * @param power Largest element has degree power - 1.
@@ -102,30 +124,31 @@ std::vector<std::vector<double>> DesignPowerBasis(std::vector<double> t, uint64_
      * @return length(t) by j + k corresponding to input data.  
      */
 
+    //Power n := order n+1 spline.
     power = power + 1;
 
     //Set up matrix with correct dimensions:
-    std::vector<std::vector<double>> mat(t.size(), std::vector<double>(power + knots.size())); 
+    std::vector<std::vector<double>> mat(t.size(), std::vector<double>(power + knots.size()));
 
     //Populate matrix with appropriate elements: mat_i,j = t_i^{j-1}
     for (uint64_t i = 0; i < t.size(); i++)
     {
         for (uint64_t j = 0; j < power; j++)
         {
-            mat[i][j] = pow(t[i],j);
+            mat[i][j] = pow(t[i], j);
         }
         for (uint64_t j = 0; j < knots.size(); j++) //
         {
-            mat[i][power + j] = pow(pm(t[i] - knots[j]),(power - 1));
+            mat[i][power + j] = pow(pm(t[i] - knots[j]), (power - 1));
         }
     }
-    return(mat);
+    return (mat);
 }
 
-std::vector<std::vector<double>> DesignBSplineBasis(std::vector<double> t, uint64_t power, std::vector<double> knots){
+std::vector<std::vector<double>> DesignBSplineBasis(std::vector<double> t, uint64_t power, std::vector<double> knots)
+{
     /**
      * @brief Creates a design matrix for fitting a B-spline of the nth order:
-     * 
      * 
      * For fitting regression spline models. 
      * 
@@ -144,22 +167,21 @@ std::vector<std::vector<double>> DesignBSplineBasis(std::vector<double> t, uint6
     //Set up matrix with correct dimensions:
     std::vector<std::vector<double>> mat(t.size(), std::vector<double>(k, 0));
 
-    
-    //Populate matrix with appropriate elements: 
+    //Populate matrix with appropriate elements:
     for (uint64_t i = 0; i < t.size(); i++)
     {
         for (uint64_t j = 1; j <= k; j++)
         {
-            mat[i][j - 1] = CoxDeBoor(t[i], j , knots, power);   
+            mat[i][j - 1] = CoxDeBoor(t[i], j, knots, power);
         }
     }
-    mat[t.size() - 1][k-1] = 1; //Assign at right boundary to properly fit boundary basis. 
-    return(mat);
+    //Assign at right boundary to properly fit boundary basis.
+    mat[t.size() - 1][k - 1] = 1; 
+    return (mat);
 }
 
-
-std::vector<std::vector<double>> Transpose(std::vector<std::vector<double>> A){
-
+std::vector<std::vector<double>> Transpose(std::vector<std::vector<double>> A)
+{
     /**
      * @brief Transpose matrix
      * 
@@ -168,10 +190,9 @@ std::vector<std::vector<double>> Transpose(std::vector<std::vector<double>> A){
      * @return Tranposed version of A
      */
 
-
     std::vector<std::vector<double>> B(A[1].size(), std::vector<double>(A.size())); //Create new matrix with identical dimensions to A.
 
-    //Reassign values. 
+    //Reassign values.
     for (uint64_t i = 0; i < A.size(); i++)
     {
         for (uint64_t j = 0; j < A[1].size(); j++)
@@ -179,11 +200,12 @@ std::vector<std::vector<double>> Transpose(std::vector<std::vector<double>> A){
             B[j][i] = A[i][j];
         }
     }
-    //Return _new_ matrix. 
-    return(B);
+    //Return _new_ matrix.
+    return (B);
 }
 
-std::vector<std::vector<double>> MatMul(std::vector<std::vector<double>> A, std::vector<std::vector<double>> B){
+std::vector<std::vector<double>> MatMul(std::vector<std::vector<double>> A, std::vector<std::vector<double>> B)
+{
     /**
      * @brief Multiply two matrices together and return a new matrix. 
      * 
@@ -193,10 +215,10 @@ std::vector<std::vector<double>> MatMul(std::vector<std::vector<double>> A, std:
      * @return C = A*B.
      */
 
-    //Create new matrix of size A_i, B_j, populate with zeroes. 
+    //Create new matrix of size A_i, B_j, populate with zeroes.
     std::vector<std::vector<double>> C(A.size(), std::vector<double>(B[1].size(), 0));
 
-    //Loop over all A rows and B columns and add the dot product to the output matrix.
+    //Loop over all A rows and B columns and add the sum to the output matrix.
     for (uint64_t i = 0; i < A.size(); i++)
     {
         for (uint64_t j = 0; j < B[1].size(); j++)
@@ -206,42 +228,45 @@ std::vector<std::vector<double>> MatMul(std::vector<std::vector<double>> A, std:
             {
                 sum += A[i][k] * B[k][j];
             }
-            C[i][j] = sum;    
-        } 
+            C[i][j] = sum;
+        }
     }
-    //Return output as new matrix. 
-    return(C);
+    //Return output as new matrix.
+    return (C);
 }
 
-std::vector<std::vector<double>> MatVecMul(std::vector<std::vector<double>> A, std::vector<double> y){
-
+std::vector<std::vector<double>> MatVecMul(std::vector<std::vector<double>> A, std::vector<double> y)
+{
     /**
-     * @brief Multiply a matrix by a vector for the right.  
+     * @brief Multiply a matrix by a vector to the right.  
      * 
      * @param A Input matrix in Ay = x
      * @param y Input vector in Ay = x
      * 
-     * @return x as a _matrix_, not a vector, to keep classes consistent in later use. E.g. [y] instead of y. 
+     * @return x as a _matrix_ (vector of vectors, of size (n,0)), not a vector, to keep types consistent in later use.
      */
 
-    //Create y, populate with zeroes. 
+    //Create output, populate with zeroes.
     std::vector<std::vector<double>> C(A.size(), std::vector<double>(1, 0));
 
     for (uint64_t i = 0; i < A.size(); i++)
     {
 
+        //Push vector through matrix and add result to output.
         double sum = 0;
         for (uint64_t k = 0; k < y.size(); k++)
         {
-            sum += A[i][k] * y[k]; //Push vector through matrix and add result to output. 
+            sum += A[i][k] * y[k]; 
         }
-        C[i][0] = sum;    
+        //Assign  sum at each index to the output vector.
+        C[i][0] = sum;
     }
-    //Return C = Ay. 
-    return(C);
+    //Return C = Ay.
+    return (C);
 }
 
-bool TriLCheck(std::vector<std::vector<double>> A){
+bool TriLCheck(std::vector<std::vector<double>> A)
+{
     /**
      * @brief Check if a matrix is upper triangular. E.g. all element below the primary diagonal are zero. 
      * 
@@ -251,27 +276,39 @@ bool TriLCheck(std::vector<std::vector<double>> A){
      */
 
     double sum = 0;
-    for (uint64_t i = 1; i < A.size(); i++) //start at one because we don't care about first row. 
+
+    //start at one because we don't care about first row.
+    for (uint64_t i = 1; i < A.size(); i++) 
     {
-        for (uint64_t j = 0; j < i; j++) // Sum absolute value of all elements to see if any are greater than zero. 
+        //Sum absolute value of all elements to see if any are greater than zero.
+        for (uint64_t j = 0; j < i; j++) 
         {
             sum += abs(A[i][j]);
-        }   
+        }
     }
-    if (sum < 1.0e-200 ) //Matrix is Lower Triangular 
+    /*
+    Use this tolerance here because we need to use an inverse later to calculate the Hat matrix, which is ill conditioned. 
+    Ideally, I would have implemented some decomposition to avoid this. 
+
+    Issues around numerical algebra broke the solver if we checked for exact equivalency, so I needed to check within a tolerance. 
+    */
+    if (sum < 1.0e-200) 
     {
-        return(1);
+        return (1);
     }
-    else //There is a nonzero element below the main diagonal.
+    else //There is a nonzero element below the main diagonal, return FALSE.
     {
-        return(0);
+        return (0);
     }
 }
 
-std::vector<std::vector<double>> SolveSystem(std::vector<std::vector<double>> B, std::vector<std::vector<double>> y){
+std::vector<std::vector<double>> SolveSystem(std::vector<std::vector<double>> B, std::vector<std::vector<double>> y)
+{
 
     /**
      * @brief Solve a linear system: find 'a' such that Ba = y. 
+     * 
+     * Uses Gaussian Elimination with Back Substitution. 
      * 
      * @param B Corresponding matrix
      * @param y Given data, e.g. y in (t,y) time series. 
@@ -279,14 +316,14 @@ std::vector<std::vector<double>> SolveSystem(std::vector<std::vector<double>> B,
      * @return 1d Matrix of coefficients that solve the linear system; 'a' in Ba = y. 
      */
 
-    //Create new vectors of the size that we want by copying the input values. 
-    std::vector<std::vector<double>> V = y; //For use augmenting matrix. 
+    //Create new vectors of the size that we want by copying the input values.
+    std::vector<std::vector<double>> V = y;    //For use augmenting matrix.
     std::vector<std::vector<double>> Soln = y; //For use in Back Sub
-    std::vector<std::vector<double>> A = B; //For use in both algorithms. 
+    std::vector<std::vector<double>> A = B;    //For use in both algorithms.
 
     ///Gaussian Elimination
 
-    //Check if we have a unique solution --- if not, a transpose is missing somewhere, and we need to throw an error to avoid segfaulting. 
+    //Check if we have a unique solution --- if not, a transpose is missing somewhere, and we need to throw an error to avoid segfaulting.
     if (A.size() < A[1].size())
     {
         std::cout << "Overdetermined System of Linear Equations --- Error.";
@@ -294,28 +331,29 @@ std::vector<std::vector<double>> SolveSystem(std::vector<std::vector<double>> B,
     }
 
     //Define values for the While loop
-    uint64_t maxiters = 1000000; //Really big number to avoid a totally fatal infinite loop. 
-    uint64_t count    = 0; //Count for while loop.
+    uint64_t maxiters = 1000000; //Really big number to avoid a totally fatal infinite loop.
+    uint64_t count = 0;          //Count for use in while loop.
 
-    //Augment Matrix.
+    //Augment Matrix with response vector.
     for (uint64_t i = 0; i < A.size(); i++)
     {
         A[i].push_back(V[i][0]);
     }
 
-    //Start actual Gaussian elimination process. 
+    //Start actual Gaussian elimination process.
     while (count < maxiters)
     {
-
-
         for (uint64_t index = 0; index < A.size(); index++)
         {
             //Loop over all the indices from zero -> number of rows (not columns; matrix is augmented and no longer square)
-            for (uint64_t rowIndex = index + 1; rowIndex < A.size(); rowIndex++){
-                if (A[rowIndex][index] != 0) //If already zero we _must_ skip to avoid division by zero.
+            for (uint64_t rowIndex = index + 1; rowIndex < A.size(); rowIndex++)
+            {
+                //If already zero we skip to avoid changing by nothing.
+                if (A[rowIndex][index] != 0) 
                 {
-                    double currentVal = A[rowIndex][index]; //Values for computation after quick division by zero check. 
-                    double rowOneVal = A[index][index]; 
+                    //Values for computation after quick division by zero check.
+                    double currentVal = A[rowIndex][index]; 
+                    double rowOneVal = A[index][index];
 
                     if (rowOneVal != 0)
                     {
@@ -323,42 +361,42 @@ std::vector<std::vector<double>> SolveSystem(std::vector<std::vector<double>> B,
                         //Add a multiple of correctionfactor*rowoneindex + rowindex DO THIS
                         for (uint64_t iter = 0; iter < A[1].size(); iter++)
                         {
-                            A[rowIndex][iter] = A[rowIndex][iter] + correctionFactor*A[index][iter]; //Add row*multiple to row to reduce to zero. 
+                            //Add row*multiple to row to reduce to zero.
+                            A[rowIndex][iter] = A[rowIndex][iter] + correctionFactor * A[index][iter]; 
                         }
                     }
                 }
             }
         }
-        if (TriLCheck(A) == 1) //Check if our matrix is lower triangular -> simplified. If so, break. 
+        if (TriLCheck(A) == 1) //Check if our matrix is lower triangular -> simplified. If so, break.
         {
             count = maxiters;
         }
-        count = count + 1;        
+        count = count + 1;
     }
 
-
-    
     //Back Substitution.
 
-    for (int64_t i =  (int64_t)A.size() - 1; i >= 0; --i) //Starting at last element, decrementing. In back sub we roll up from the last (simplist) row.
+    for (int64_t i = (int64_t)A.size() - 1; i >= 0; --i) //Starting at last element, decrementing. In back sub we roll up from the last (simplist) row.
     {
         uint64_t m_size = A[1].size(); //Define outside of indexing into an array for readability.
 
-        double current = A[(uint64_t)i][m_size - 1]; //Think about last row of a lower triangular matrix; we want to start with [0,0,0 .., 0, x | y], so grab len - 1th element. 
+        double current = A[(uint64_t)i][m_size - 1]; //Think about last row of a lower triangular matrix; we want to start with [0,0,0 .., 0, x | y], so grab len - 1th element.
 
         double cumsum = 0;
-        for (uint64_t j = (uint64_t)i+1; j < A.size(); j++)
+        for (uint64_t j = (uint64_t)i + 1; j < A.size(); j++)
         {
-            cumsum = cumsum + A[(uint64_t)i][j] *  Soln[(uint64_t)j][0]; //See e.g. https://algowiki-project.org/en/Backward_substitution 1.2
+            cumsum = cumsum + A[(uint64_t)i][j] * Soln[(uint64_t)j][0]; //See e.g. https://algowiki-project.org/en/Backward_substitution 1.2
         }
 
-        double answer =  ((current - cumsum) / A[(uint64_t)i][(uint64_t)i]);
+        double answer = ((current - cumsum) / A[(uint64_t)i][(uint64_t)i]);
         Soln[(uint64_t)i][0] = answer;
     }
-    return(Soln); //Return solution vector.
+    return (Soln); //Return solution vector.
 }
 
-bool NotNAN(double var){
+bool NotNAN(double var)
+{
     /**
      * @brief Checks if a value is NAN
      * 
@@ -367,15 +405,16 @@ bool NotNAN(double var){
      */
     if (var != var)
     {
-        return(0);
+        return (0);
     }
     else
     {
-        return(1);
+        return (1);
     }
 }
 
-bool MatNoNAN(std::vector<std::vector<double>> mat){
+bool MatNoNAN(std::vector<std::vector<double>> mat)
+{
     /**
      * @brief Returns One if Vector contains a NaN.
      * 
@@ -388,14 +427,15 @@ bool MatNoNAN(std::vector<std::vector<double>> mat){
         {
             if (!NotNAN(mat[i][j]))
             {
-                return(0);
+                return (0);
             }
         }
     }
-    return(1);
+    return (1);
 }
 
-std::vector<std::vector<double>> Eye(uint64_t size1, uint64_t size2){
+std::vector<std::vector<double>> Eye(uint64_t size1, uint64_t size2)
+{
     /**
      * @brief Returns an identity matrix of size 'size1, size2'. Useful for constructing penalization matrices. 
      * 
@@ -413,17 +453,17 @@ std::vector<std::vector<double>> Eye(uint64_t size1, uint64_t size2){
     {
         for (uint64_t j = 0; j < out[0].size(); j++)
         {
-            if (i == j )
+            if (i == j)
             {
                 out[i][j] = 1;
             }
-        }       
+        }
     }
-    return(out);
+    return (out);
 }
 
-
-std::vector<std::vector<double>> AddWigglyPenalty(double lambda, std::vector<std::vector<double>> B){
+std::vector<std::vector<double>> AddWigglyPenalty(double lambda, std::vector<std::vector<double>> B)
+{
     /**
      * @brief This function adds a wigglyness penalty to a smoothing spline. The derivation
      * for this penalty matrix is given in Wood — Generalized Additive Models (2006).
@@ -442,7 +482,7 @@ std::vector<std::vector<double>> AddWigglyPenalty(double lambda, std::vector<std
      * BetaHat = (XTX + penalty) \ XT y.  
      * 
      */
-    
+
     std::vector<std::vector<double>> out = B;
 
     //Initialize a vector of zeroes at the correct size (dimensions given in Wood 2006).
@@ -473,20 +513,21 @@ std::vector<std::vector<double>> AddWigglyPenalty(double lambda, std::vector<std
     //Matrix multiplication to recover S = DTD.
     D = MatMul(Transpose(D), D);
 
-    //Add penalty to input matrix. 
+    //Add penalty to input matrix.
     for (uint64_t i = 0; i < out.size(); i++)
     {
         for (uint64_t j = 0; j < out.size(); j++)
         {
-            out[i][j] += pow(lambda,2) * D[i][j];
+            out[i][j] += pow(lambda, 2) * D[i][j];
         }
     }
 
     //Returns (Input + lambda^2 DTD).
-    return(out);
+    return (out);
 }
 
-bool IsEye(std::vector<std::vector<double>> A, uint64_t l1, uint64_t l2){
+bool IsEye(std::vector<std::vector<double>> A, uint64_t l1, uint64_t l2)
+{
     /**
      * @brief Checks if a matrix is an identity matrix. l1, l2 used to check section of an augmented matrix. 
      * 
@@ -501,29 +542,29 @@ bool IsEye(std::vector<std::vector<double>> A, uint64_t l1, uint64_t l2){
      */
     for (uint64_t i = 0; i < l1; i++)
     {
-        for (uint64_t j = 0; j  < l2; j ++)
+        for (uint64_t j = 0; j < l2; j++)
         {
             if (i != j)
             {
                 if (A[i][j] != 0)
                 {
-                    return(0);
+                    return (0);
                 }
             }
             if (i == j)
             {
                 if (A[i][j] != 1)
                 {
-                    return(0);
-                }     
+                    return (0);
+                }
             }
         }
     }
-    return(1);
+    return (1);
 }
 
-
-std::vector<std::vector<double>> Inverse(std::vector<std::vector<double>> A){
+std::vector<std::vector<double>> Inverse(std::vector<std::vector<double>> A)
+{
     /**
      * @brief Calculates the matrix inverse. 
      * 
@@ -531,14 +572,13 @@ std::vector<std::vector<double>> Inverse(std::vector<std::vector<double>> A){
 
     if (A.size() != A[0].size())
     {
-        std::cout << "error, matrix is not square!" << "\n";
+        std::cout << "error, matrix is not square!"
+                  << "\n";
     }
-    
 
     std::vector<std::vector<double>> IDtoAugment = Eye(A.size(), A[0].size());
     std::vector<std::vector<double>> Inv(A.size(), std::vector<double>((A[0].size() + IDtoAugment[0].size()), 0));
     std::vector<std::vector<double>> C = A;
-
 
     //Augment Matrix.
     for (uint64_t i = 0; i < A.size(); i++)
@@ -554,19 +594,18 @@ std::vector<std::vector<double>> Inverse(std::vector<std::vector<double>> A){
     }
     //Augmentation Complete.
 
-     //Define values for the While loop
-    uint64_t maxiters = 1000000; //Really big number to avoid a totally fatal infinite loop. 
-    uint64_t count    = 0; //Count for while loop.
+    //Define values for the While loop
+    uint64_t maxiters = 1000000; //Really big number to avoid a totally fatal infinite loop.
+    uint64_t count = 0;          //Count for while loop.
 
-
-    //Start actual Gaussian elimination process. 
+    //Start actual Gaussian elimination process.
     while (count < maxiters)
     {
         for (uint64_t index = 0; index < Inv.size(); index++)
         {
             //Loop over all the indices from zero -> number of rows (not columns; matrix is augmented and no longer square)
-            for (uint64_t rowIndex = 0; rowIndex < A.size(); rowIndex++){
-
+            for (uint64_t rowIndex = 0; rowIndex < A.size(); rowIndex++)
+            {
 
                 //Divide out to make leading element into one.
                 if (index == rowIndex)
@@ -577,11 +616,11 @@ std::vector<std::vector<double>> Inverse(std::vector<std::vector<double>> A){
                         Inv[rowIndex][k] = Inv[rowIndex][k] / Divisor;
                     }
                 }
-                
+
                 if (Inv[rowIndex][index] != 0) //If already zero we _must_ skip to avoid division by zero.
                 {
-                    double currentVal = Inv[rowIndex][index]; //Values for computation after quick division by zero check. 
-                    double rowOneVal = Inv[index][index]; 
+                    double currentVal = Inv[rowIndex][index]; //Values for computation after quick division by zero check.
+                    double rowOneVal = Inv[index][index];
 
                     if (rowOneVal != 0)
                     {
@@ -592,8 +631,8 @@ std::vector<std::vector<double>> Inverse(std::vector<std::vector<double>> A){
                             //Add a multiple of correctionfactor*rowoneindex + rowindex DO THIS
                             for (uint64_t iter = 0; iter < Inv[0].size(); iter++)
                             {
-                                
-                                Inv[rowIndex][iter] = Inv[rowIndex][iter] + correctionFactor*Inv[index][iter]; //Add row*multiple to row to reduce to zero. 
+
+                                Inv[rowIndex][iter] = Inv[rowIndex][iter] + correctionFactor * Inv[index][iter]; //Add row*multiple to row to reduce to zero.
                             }
                         }
                     }
@@ -601,16 +640,13 @@ std::vector<std::vector<double>> Inverse(std::vector<std::vector<double>> A){
             }
         }
 
-  
-         //Check if LHS is identity. If so, break. 
-        if (IsEye(Inv, A.size(), A[0].size()) == 1) 
+        //Check if LHS is identity. If so, break.
+        if (IsEye(Inv, A.size(), A[0].size()) == 1)
         {
             count = maxiters;
         }
-        count = count + 1;        
+        count = count + 1;
     }
-
-   
 
     std::vector<std::vector<double>> Out = A;
 
@@ -619,13 +655,14 @@ std::vector<std::vector<double>> Inverse(std::vector<std::vector<double>> A){
         for (uint64_t j = 0; j < A[0].size(); j++)
         {
             Out[i][j] = Inv[i][j + A[0].size()];
-        } 
+        }
     }
-    
-    return(Out);
+
+    return (Out);
 }
 
-double Trace(std::vector<std::vector<double>> A){
+double Trace(std::vector<std::vector<double>> A)
+{
     /**
      * @brief Returns the rank for some matrix A.
      * 
@@ -638,17 +675,18 @@ double Trace(std::vector<std::vector<double>> A){
         {
             if (i == j)
             {
-                 sum += A[i][j];
+                sum += A[i][j];
             }
         }
     }
-    return(sum);
+    return (sum);
 }
 
-double TraceHatMatrix(std::vector<std::vector<double>> X, double lambda){
+double TraceHatMatrix(std::vector<std::vector<double>> X, double lambda)
+{
 
     //Set up X, X transpose
-    std::vector<std::vector<double>> XTX = MatMul(Transpose(X),X);
+    std::vector<std::vector<double>> XTX = MatMul(Transpose(X), X);
 
     //Apply Penalty
     std::vector<std::vector<double>> PenalizedXTX = AddWigglyPenalty(lambda, XTX);
@@ -656,9 +694,7 @@ double TraceHatMatrix(std::vector<std::vector<double>> X, double lambda){
     //Apply final multiplications and return.
     std::vector<std::vector<double>> InvertedPenXTX = Inverse(PenalizedXTX);
     std::vector<std::vector<double>> TempMat = MatMul(X, InvertedPenXTX);
-    std::vector<std::vector<double>> XinvXTXpenX = MatMul(TempMat,Transpose(X));
+    std::vector<std::vector<double>> XinvXTXpenX = MatMul(TempMat, Transpose(X));
 
-
-    return(Trace(XinvXTXpenX));
-
+    return (Trace(XinvXTXpenX));
 }
