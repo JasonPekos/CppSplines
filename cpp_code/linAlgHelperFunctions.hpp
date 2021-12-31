@@ -14,7 +14,7 @@ This file contains linear algebra helper functions to help with various computat
 3. Transpose: Return matrix transpose
 4. MatMul: Matrix multiplication
 5. MatVecMul: Matrix-Vector multiplication + standardizing type.
-6. TriLCheck: Check if a matrix is lower triangular. 
+6. TriLCheck: Check if a matrix is upper triangular. 
 7. SolveSystem: Solve a linear system using reduction to Row Echelon form and then back substitution.
 */
 
@@ -258,7 +258,7 @@ bool TriLCheck(std::vector<std::vector<double>> A){
             sum += abs(A[i][j]);
         }   
     }
-    if (sum == 0 ) //Matrix is Lower Triangular 
+    if (sum < 1.0e-200 ) //Matrix is Lower Triangular 
     {
         return(1);
     }
@@ -306,6 +306,8 @@ std::vector<std::vector<double>> SolveSystem(std::vector<std::vector<double>> B,
     //Start actual Gaussian elimination process. 
     while (count < maxiters)
     {
+
+
         for (uint64_t index = 0; index < A.size(); index++)
         {
             //Loop over all the indices from zero -> number of rows (not columns; matrix is augmented and no longer square)

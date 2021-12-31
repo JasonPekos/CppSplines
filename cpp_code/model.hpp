@@ -319,9 +319,10 @@ void fit(std::vector<double> t, std::vector<double> y){
         //Add penalty
         std::vector<std::vector<double>> P = AddWigglyPenalty(Lambda, XTX);
 
-        
         //Return Coefficients.
         Coe = SolveSystem(P, MatVecMul(Transpose(DesignMatrix), y));
+
+
     
         if (MatNoNAN(Coe) == 0)
         {
@@ -380,17 +381,20 @@ void fit(std::vector<double> t, std::vector<double> y){
 
     void seekLambda(std::vector<double> t, std::vector<double> y){
         std::vector<double> tempLambda = {};
-        for (double i = 2; i < 100; i++)
+
+        std::vector<double> testpoints = linspace(0.1,10,0.1);
+
+        for (double i = 0; i < testpoints.size(); i++)
         {
-            Lambda = 1/i;
+            Lambda = testpoints[i];
             GCV(t,y);
             tempLambda.push_back(CrossValScore);
-            std::cout << 1/i << "| GCV: " << CrossValScore << "\n";
+            //std::cout << testpoints[i] << "| GCV: " << CrossValScore << "\n"; Uncomment to watch the CV score go down (good) and then up again.
         }
 
-        //std::vector<double>::iterator iter = std::min_element(std::begin(tempLambda), std::end(tempLambda));
-        //int64_t index = std::distance(std::begin(tempLambda), iter);
-        //Lambda = 1/index;
+        std::vector<double>::iterator iter = std::min_element(std::begin(tempLambda), std::end(tempLambda));
+        int64_t index = std::distance(std::begin(tempLambda), iter);
+        Lambda = testpoints[index];
     }
 
 
