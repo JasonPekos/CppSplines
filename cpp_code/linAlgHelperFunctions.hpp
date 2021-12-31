@@ -351,14 +351,10 @@ std::vector<std::vector<double>> SolveSystem(std::vector<std::vector<double>> B,
                 //If already zero we skip to avoid changing by nothing.
                 if (A[rowIndex][index] != 0) 
                 {
-                    //Values for computation after quick division by zero check.
-                    double currentVal = A[rowIndex][index]; 
-                    double rowOneVal = A[index][index];
-
-                    if (rowOneVal != 0)
+                    if (A[index][index] != 0)
                     {
-                        double correctionFactor = -(currentVal / rowOneVal);
-                        //Add a multiple of correctionfactor*rowoneindex + rowindex DO THIS
+                        double correctionFactor = -(A[rowIndex][index] / A[index][index]);
+                        //Add a multiple of correctionfactor*rowoneindex + rowindex
                         for (uint64_t iter = 0; iter < A[1].size(); iter++)
                         {
                             //Add row*multiple to row to reduce to zero.
@@ -368,20 +364,26 @@ std::vector<std::vector<double>> SolveSystem(std::vector<std::vector<double>> B,
                 }
             }
         }
-        if (TriLCheck(A) == 1) //Check if our matrix is lower triangular -> simplified. If so, break.
+        //Check if our matrix is lower triangular -> simplified. If so, break.
+        if (TriLCheck(A) == 1) 
         {
             count = maxiters;
         }
         count = count + 1;
     }
 
-    //Back Substitution.
+    /*
+    Back Substitution.
+    */
 
-    for (int64_t i = (int64_t)A.size() - 1; i >= 0; --i) //Starting at last element, decrementing. In back sub we roll up from the last (simplist) row.
+   //Starting at last element, decrementing. In back sub we roll up from the last (simplest) row.
+    for (int64_t i = (int64_t)A.size() - 1; i >= 0; --i) 
     {
-        uint64_t m_size = A[1].size(); //Define outside of indexing into an array for readability.
+        //Define outside of indexing into an array for readability.
+        uint64_t m_size = A[1].size(); 
 
-        double current = A[(uint64_t)i][m_size - 1]; //Think about last row of a lower triangular matrix; we want to start with [0,0,0 .., 0, x | y], so grab len - 1th element.
+        //Think about last row of a lower triangular matrix; we want to start with [0,0,0 .., 0, x | y], so grab len - 1th element.
+        double current = A[(uint64_t)i][m_size - 1]; 
 
         double cumsum = 0;
         for (uint64_t j = (uint64_t)i + 1; j < A.size(); j++)
@@ -389,10 +391,12 @@ std::vector<std::vector<double>> SolveSystem(std::vector<std::vector<double>> B,
             cumsum = cumsum + A[(uint64_t)i][j] * Soln[(uint64_t)j][0]; //See e.g. https://algowiki-project.org/en/Backward_substitution 1.2
         }
 
+        //Push answer at each step into solution vector
         double answer = ((current - cumsum) / A[(uint64_t)i][(uint64_t)i]);
         Soln[(uint64_t)i][0] = answer;
     }
-    return (Soln); //Return solution vector.
+    //Return solution vector.
+    return (Soln); 
 }
 
 bool NotNAN(double var)
@@ -416,7 +420,7 @@ bool NotNAN(double var)
 bool MatNoNAN(std::vector<std::vector<double>> mat)
 {
     /**
-     * @brief Returns One if Vector contains a NaN.
+     * @brief Returns One if Matrix contains a NaN.
      * 
      * @param mat Matrix we care about. 
      * 
@@ -547,7 +551,8 @@ bool IsEye(std::vector<std::vector<double>> A, uint64_t l1, uint64_t l2)
             if (i != j)
             {
                 if (A[i][j] != 0)
-                {
+                { 
+                    //If the off-diagonals aren't zero, fail. 
                     return (0);
                 }
             }
@@ -555,11 +560,13 @@ bool IsEye(std::vector<std::vector<double>> A, uint64_t l1, uint64_t l2)
             {
                 if (A[i][j] != 1)
                 {
+                    //If the diagonals aren't one, fail.
                     return (0);
                 }
             }
         }
     }
+    //If we never failed, pass. 
     return (1);
 }
 
