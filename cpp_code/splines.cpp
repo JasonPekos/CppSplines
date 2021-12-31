@@ -214,7 +214,7 @@ int main(int argc, char const *argv[])
             model.seekLambda(t, y);
 
             //This method can take a while, so we let the user know when we've recovered lambda.
-            std::cout << "Recovered Lambda: " << model.Lambda << "\n";
+            std::cout << "Recovered Lambda: " << model.printLambda() << "\n";
         }
 
         //Fit the model, push to output, same as with the regression spline.

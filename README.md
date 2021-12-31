@@ -35,11 +35,11 @@ Where the utility of this approach comes from the fact that, after applying the 
 
 Additionally, unlike some other machine learning methods, these remain (weakly) convex optimization problems, and so we are assured that, if a solution is recovered, it is a global maxima. 
 
-**Regression Splines**
+### *Regression Splines*
 
 The first method available here is a regression spline. We split the data along the time axis into $k$ interior knots, and fit a piecewise polynomial between each knot. Additionally, we enforce smoothness constraints such that each successive polynomial has continuous value, first, and second derivatives at each knot point where it meets. We use two different basis construction methods here --- BSplines and Power Basis splines. The BSplines represent a natural spline basis, in contrast to the Power Basis, which enforces no such boundary constraint. 
 
-*Power Basis*
+#### *Power Basis*
 
 The power basis representation of a spline is found by augmenting the basis for a polynomial regression problem of that same order with additional basis functions at each not to enforce our continuity constraints.
 
@@ -94,7 +94,7 @@ Notes:
 
 - Larger computations should use B-Splines instead. 
 
-*B-Splines*
+#### *B-Splines*
 
 Although computationally simple, the power basis provided above has numerous undesirable numerical properties --- specifically, they require the computation of large numbers, which can lead to rounding problems. To solve this issue, we turn towards an alternative basis construction which can span the same set of functions as a clamped power basis. 
 
@@ -128,6 +128,26 @@ Which can be automatically plotted with the attached plotting.py file, returning
 
 
 ![plottwo](https://raw.githubusercontent.com/JasonPekos/CppSplines/main/images/BSpline36.png)
+
+#### *Polynomial Regression*
+
+This program can also perform simple polynomial regression, for testing purposes. 
+
+
+For data in 'input.csv', we can return a polynomial regression fit with:
+
+```{bash}
+./splines PolynomialRegression power
+```
+
+For example:
+
+```{bash}
+./splines PolynomialRegression 2
+```
+
+For a quadratic regression fit.
+
 
 
 
@@ -205,6 +225,7 @@ Returns a smooth with automatically determined wiggliness parameter.
 
 
 
+![plotfour](https://raw.githubusercontent.com/JasonPekos/CppSplines/main/images/SmoothAuto.png)
 
 
 
@@ -212,17 +233,62 @@ Returns a smooth with automatically determined wiggliness parameter.
 
 
 
+## Algorithms Used
+
+Non-trivial algorithms (e.g., anything more complicated than constructing a Vandermonde matrix:)
+
+**Cox De Boor Recurrence**
+
+Setting a base case as the degree zero basis function — given by an indicator function between knots — we evaluate:
+
+$$B_{i, p}(x)=\frac{x-k_{i}}{k_{i+p}-k_{i}} B_{i, p-1}(x)+\frac{k_{i+p+1}-x}{k_{i+p+1}-k_{i+1}} B_{i+1, p-1}(x)$$
+
+For:
+- Knots $t_m$
+- Real number $x$
+- Basis of degree $p$
+
+Where each $B_{m, p-1}$ is a recursive function call.
+
+**GCV**
+
+Seeking to avoid calculating new scores for each point in a leave-one-out cross validation test, we employ a clever trick, fitting the model _once_ per $\lambda$ value, and then evaluating:
+
+$$\mathcal{V}_{g}=\frac{n \sum_{i=1}^{n}\left(y_{i}-\hat{f}_{i}\right)^{2}}{[n-\operatorname{tr}(\mathbf{A})]^{2}}$$
+
+Where
+
+- $y_i$ is the dropped point.
+- $\hat f_i$ is the function evaluated at that point.
+    - This is essentially the Sum of Squared Errors.
+- Divide out by the number of points minus the trace of the Hat Matrix.
+    - The hat matrix is a [data, data] sized matrix that produces the model fits when multiplied by the predictor variables.
+    - Given by $\mathbf{X}\left(\mathbf{X}^{\top} \mathbf{X}+\lambda \mathbf{S}\right)^{-1} \mathbf{X}^{\top}$
+
+**Gaussian Elimination**
+
+With one exception, systems are solved in this package via Gaussian elimination (instead of calculation of the inverse), and then back substitution. This algorithm is not the focus of the project, but it plays a key role, so a description here seems useful. 
+
+- The goal is to solve a system of type "X \ y" in Matlab / Julia notation. 
+- Augment X with vector y on the right hand side.
+- Loop over all the columns
+    - Loop over all the rows
+        - For any value below a pivot, calculate the new value required such that subtracting the multiple of this value times the pivot from the target row will make the original value zero.
+        - Add a the pivot row multiplied by this value to that entire row.
+        - Repeat until the matrix is upper triangular.
+- Starting with the last element of the lower triangular matrix, construct the solution vector by iterating up over the rows of the matrix.
 
 
+Due to the matrix inverse being ill-conditioned, this is vastly preferable to explicit computations of $\hat Beta$. Unfortunately, when calculating the hat matrix, an inverse needed to be computed exactly. Ideally an alternative should be implemented here, using some sort of decomposition (e.g. SVD) to recover a more well conditioned estimate. 
 
-**Need:**
+In the case of an explicit inverse, the above algorithm was modified slightly:
 
-- Gauss Elim
-- Regression Derivations 
--  .calclambda method in smooth spline
-- matrix class??? (requires substantial code re-writes)
-- Polynomial regression
-- 
+- Augment with an identity matrix.
+- Eliminating all off-diagonal elements.
+- Set pivots to zero.
+- Return resultant transform of identity as matrix inverse. 
+
+This is far from ideal, but for the crude computation of GCV that it is used for, it doesn't totally vitiate the project. 
 
 
 

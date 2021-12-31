@@ -49,13 +49,14 @@ private:
     uint64_t Knots = 3;                //Data about model (number of knots)
     uint64_t Power = 3;                //Data about model (power of knots)
     std::string Method = "PowerBasis"; //Data about model (Method) [PowerBasis or BSpline or PolynomialRegression]
-
-public:
+    
     //Holds the coefficients. Initialized at zero.
     std::vector<std::vector<double>> Coe{1, std::vector<double>(1, 0)};
 
     //Holds the actual knot positions. Filled when fitting the model.
     std::vector<double> kTemp = {};
+
+public:
 
     void fit(std::vector<double> t, std::vector<double> y)
     {
@@ -321,20 +322,31 @@ private:
     
     //Holds knots — private now, as we just place them at every point. 
     std::vector<double> kTemp = {};
+
+    //Power of basis functions 
+    uint64_t Power = 3; 
+
+    //Model coefficients.
+    std::vector<std::vector<double>> Coe{1, std::vector<double>(1, 0)};
     
 
-public:
-    //Power of basis functions — made public so a user can change if they want to, but not part of the constructor because they really shouldn't be changed.
-    uint64_t Power = 3; 
+    //Cross Validation score, set to zero before model fitting. 
+    double CrossValScore = 0;  
 
     //Penalization value.
     double Lambda = 0; 
 
-    //Model coefficients.
-    std::vector<std::vector<double>> Coe{1, std::vector<double>(1, 0)};
+public:
 
-    //Cross Validation score, set to zero before model fitting. 
-    double CrossValScore = 0;  
+    double printLambda()
+    {
+        /**
+         * @brief Prints Lambda, done this way to respect invariance. 
+         * 
+         */
+
+        return(Lambda);
+    }
 
 
     void fit(std::vector<double> t, std::vector<double> y)

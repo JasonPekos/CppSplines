@@ -50,7 +50,7 @@ int InputCheck(int argc, const char **argv)
         return (1);
     }
 
-    if (argc < 4) // Checks to make sure we have at least three arguments.
+    if (argc < 4 && method != PNR) // Checks to make sure we have at least three arguments.
     {
         std::cout << "There is an issue here with the number of parameters submitted — ";
         std::cout << "the minimum number of parameters for any procedure other than Smooth is 2 \n";
