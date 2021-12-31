@@ -464,7 +464,7 @@ public:
         std::vector<double> testpoints = linspace(0.1, 10, 0.1);
 
         //Loop over all test lambdas and push into the temporary storage vector.
-        for (double i = 0; i < testpoints.size(); i++)
+        for (uint64_t i = 0; i < testpoints.size(); i++)
         {
             Lambda = testpoints[i];
             GCV(t, y);
@@ -474,7 +474,7 @@ public:
 
         //Find the value of Lambda corresponding to the lower GCV value.
         std::vector<double>::iterator iter = std::min_element(std::begin(tempLambda), std::end(tempLambda));
-        int64_t index = std::distance(std::begin(tempLambda), iter);
+        uint64_t index = (uint64_t)std::distance(std::begin(tempLambda), iter);
 
         //Set this value to the instance value of Lambda for fitting. 
         Lambda = testpoints[index];

@@ -8,7 +8,7 @@ double pm(double x)
     /**
      * @brief This returns 'x' iff x > 0. 
      * 
-     * Used often in power spline basis construction to cut down on lines of code. 
+     * Used often in power spline basis construction. 
      */
     if (x > 0)
     {

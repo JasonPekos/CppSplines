@@ -573,7 +573,7 @@ bool IsEye(std::vector<std::vector<double>> A, uint64_t l1, uint64_t l2)
 std::vector<std::vector<double>> Inverse(std::vector<std::vector<double>> A)
 {
     /**
-     * @brief Calculates the matrix inverse. 
+     * @brief Calculates the matrix inverse using Gauss Jordan Elimination. 
      * 
      */
 
@@ -583,6 +583,7 @@ std::vector<std::vector<double>> Inverse(std::vector<std::vector<double>> A)
                   << "\n";
     }
 
+    //Set up matrices to store values // Identity matrix to augment onto side.
     std::vector<std::vector<double>> IDtoAugment = Eye(A.size(), A[0].size());
     std::vector<std::vector<double>> Inv(A.size(), std::vector<double>((A[0].size() + IDtoAugment[0].size()), 0));
     std::vector<std::vector<double>> C = A;
@@ -614,7 +615,7 @@ std::vector<std::vector<double>> Inverse(std::vector<std::vector<double>> A)
             for (uint64_t rowIndex = 0; rowIndex < A.size(); rowIndex++)
             {
 
-                //Divide out to make leading element into one.
+                //Divide out to make leading element into one if we're on a pivot.
                 if (index == rowIndex)
                 {
                     double Divisor = Inv[rowIndex][rowIndex];
@@ -624,9 +625,12 @@ std::vector<std::vector<double>> Inverse(std::vector<std::vector<double>> A)
                     }
                 }
 
-                if (Inv[rowIndex][index] != 0) //If already zero we _must_ skip to avoid division by zero.
+                //If already zero we skip to avoid pointless work.
+                if (Inv[rowIndex][index] != 0) 
                 {
-                    double currentVal = Inv[rowIndex][index]; //Values for computation after quick division by zero check.
+
+                    //Values for computation after quick division by zero check.
+                    double currentVal = Inv[rowIndex][index]; 
                     double rowOneVal = Inv[index][index];
 
                     if (rowOneVal != 0)
@@ -638,7 +642,7 @@ std::vector<std::vector<double>> Inverse(std::vector<std::vector<double>> A)
                             //Add a multiple of correctionfactor*rowoneindex + rowindex DO THIS
                             for (uint64_t iter = 0; iter < Inv[0].size(); iter++)
                             {
-
+                                //Adding multiple of one row to another row.
                                 Inv[rowIndex][iter] = Inv[rowIndex][iter] + correctionFactor * Inv[index][iter]; //Add row*multiple to row to reduce to zero.
                             }
                         }
@@ -655,6 +659,7 @@ std::vector<std::vector<double>> Inverse(std::vector<std::vector<double>> A)
         count = count + 1;
     }
 
+    //Push only LHS into a new matrix.
     std::vector<std::vector<double>> Out = A;
 
     for (uint64_t i = 0; i < Inv.size(); i++)
@@ -665,13 +670,14 @@ std::vector<std::vector<double>> Inverse(std::vector<std::vector<double>> A)
         }
     }
 
+    //Return LHS as inverse. 
     return (Out);
 }
 
 double Trace(std::vector<std::vector<double>> A)
 {
     /**
-     * @brief Returns the rank for some matrix A.
+     * @brief Returns the trace for some matrix A.
      * 
      */
 
@@ -682,6 +688,7 @@ double Trace(std::vector<std::vector<double>> A)
         {
             if (i == j)
             {
+                //Sum every diagonal element.
                 sum += A[i][j];
             }
         }
@@ -691,17 +698,27 @@ double Trace(std::vector<std::vector<double>> A)
 
 double TraceHatMatrix(std::vector<std::vector<double>> X, double lambda)
 {
+    /**
+     * @brief This returns the trace of the hat matrix in a penalization problem. E.g. for design matrix X, 
+     * 
+     * X (XTX + lambda^2 D^2)^-1 XT
+     * 
+     * @param X Design matrix in a regression problem.
+     * @param lambda Penalization term. Make zero for a non-penalized problem.
+     * 
+     */
 
-    //Set up X, X transpose
+    //Set up X, X transpose.
     std::vector<std::vector<double>> XTX = MatMul(Transpose(X), X);
 
-    //Apply Penalty
+    //Apply Penalty.
     std::vector<std::vector<double>> PenalizedXTX = AddWigglyPenalty(lambda, XTX);
 
-    //Apply final multiplications and return.
+    //Apply final multiplications.
     std::vector<std::vector<double>> InvertedPenXTX = Inverse(PenalizedXTX);
     std::vector<std::vector<double>> TempMat = MatMul(X, InvertedPenXTX);
     std::vector<std::vector<double>> XinvXTXpenX = MatMul(TempMat, Transpose(X));
 
+    //Return.
     return (Trace(XinvXTXpenX));
 }

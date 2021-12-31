@@ -37,7 +37,7 @@ Additionally, unlike some other machine learning methods, these remain (weakly) 
 
 **Regression Splines**
 
-The first method available here is a regression spline. We split the data along the time axis into $k$ interior knots, and fit a piecewise polynomial between each knot. Additionally, we enforce smoothness constraints such that each successive polynomial has continuous value, first, and second derivatives at each knot point where it meets. We use two different basis construction methods here --- BSplines and Power Basis splines. The BSPlines represent a natural spline basis, in contrast to the Power Basis, which enforces no such boundary constraint. 
+The first method available here is a regression spline. We split the data along the time axis into $k$ interior knots, and fit a piecewise polynomial between each knot. Additionally, we enforce smoothness constraints such that each successive polynomial has continuous value, first, and second derivatives at each knot point where it meets. We use two different basis construction methods here --- BSplines and Power Basis splines. The BSplines represent a natural spline basis, in contrast to the Power Basis, which enforces no such boundary constraint. 
 
 *Power Basis*
 
@@ -47,11 +47,11 @@ For some degree $n$ basis with $k$ knots, our basis representation is given by:
 
 
 $$\begin{array}{lll}
-b_{1}(x)=1, & b_{2}(x)=x, & b_{3}(x)=x^{2}, & b_{n}(x) = x^n \\
+b_{1}(x)=1, & b_{2}(x)=x, & b_{3}(x)=x^{2},  [...], & b_{n}(x) = x^n \\
 \end{array}$$
 
 $$\begin{array}{lll}
-b_{n+1}(x) = \left(x-k_{1} \right)_{+}^{n} , & b_{n+2}(x) = \left(x-k_{2} \right)_{+}^{n}  \\
+b_{n+1}(x) = \left(x-k_{1} \right)_{+}^{n} , & b_{n+2}(x) = \left(x-k_{2} \right)_{+}^{n}, [...]  \\
 \end{array}$$
 
 $$\begin{array}{lll}
@@ -90,9 +90,9 @@ Which can be automatically plotted with the attached plotting.py file, returning
 
 Notes:
 
-- Asking for more knots than datapoints probably won't work, for nearly all data structure. The program will throw a warning when fitting, and let you know if something went wrong.
+- Asking for more knots than datapoints probably won't work, for nearly all regression problems. The program will throw a warning when fitting, and let you know if something went wrong.
 
-- Longer computations should use B-Splines instead. 
+- Larger computations should use B-Splines instead. 
 
 *B-Splines*
 
@@ -100,7 +100,7 @@ Although computationally simple, the power basis provided above has numerous und
 
 Basis spline are also wonderful in that they provide local support --- avoiding colinearity issues --- and are therefore much more well behaved numerically. 
 
-Unlike the power basis, higher order basis functions have no simple closed form, and must be represented as the iterative convolution of lower order basis functions, where the $0$th order is an indicator function on successive knots.
+Unlike the power basis, higher order basis functions have no simple closed form, and must be represented as the iterative convolution of lower order basis functions, where the $0$-th order is an indicator function on successive knots.
 
 For data in 'input.csv', we can return a power B-spline regression spline with:
 
@@ -188,7 +188,11 @@ $$\mathcal{V}_{g}=\frac{n \sum_{i=1}^{n}\left(y_{i}-\hat{f}_{i}\right)^{2}}{[n-\
 
 Where $A$ is the influence matrix and $\hat f$ is the estimate from fitting all the data. 
 
-To simplify computation further, we use approximations to the trace given in Ye (1998), and loop over the range of $\lambda$ values we care about, recovering the value which minimizes $\mathcal{V}_{g}$.
+
+
+_Note:_ Although this is computationally much cheaper than calculating a new smooth for each datapoint, this is still extremely costly, and can take a while computationally. 
+
+
 
 To use this method, request 'auto' as the lambda parameter, e.g.
 
@@ -196,7 +200,9 @@ To use this method, request 'auto' as the lambda parameter, e.g.
 ./splines Smooth auto
 ```
 
-_Note:_ Although this is computationally much cheaper than calculating a new smooth for each datapoint, this is still extremely costly, and will take a while computationally. 
+
+Returns a smooth with automatically determined wiggliness parameter.
+
 
 
 
