@@ -197,9 +197,16 @@ int main(int argc, char const *argv[])
     output.close();
     std::cout << "output.csv updated \n"; //
 
+    std::vector<double> kTemp = {4,8,12};
+
+  
+
+    std::vector<std::vector<double>> X = Design(t, 1);
+    std::vector<std::vector<double>> XTX = MatMul(Transpose(X), X);
+    std::vector<std::vector<double>> invXTX = Inverse(XTX);
+    PrintMat(XTX);
+    PrintMat(MatMul(invXTX, XTX));
     
-
-
 
 
     //PrintMat(model.Coe); Uncomment to return model coefficient values. For testing / debugging. 

@@ -310,7 +310,7 @@ std::vector<std::vector<double>> SolveSystem(std::vector<std::vector<double>> B,
         {
             //Loop over all the indices from zero -> number of rows (not columns; matrix is augmented and no longer square)
             for (uint64_t rowIndex = index + 1; rowIndex < A.size(); rowIndex++){
-                if (A[rowIndex][index] != 0) //If the pivot is already zero we _must_ skip to avoid division by zero.
+                if (A[rowIndex][index] != 0) //If already zero we _must_ skip to avoid division by zero.
                 {
                     double currentVal = A[rowIndex][index]; //Values for computation after quick division by zero check. 
                     double rowOneVal = A[index][index]; 
@@ -484,4 +484,161 @@ std::vector<std::vector<double>> AddWigglyPenalty(double lambda, std::vector<std
     return(out);
 }
 
+bool IsEye(std::vector<std::vector<double>> A, uint64_t l1, uint64_t l2){
+    /**
+     * @brief Checks if a matrix is an identity matrix. l1, l2 used to check section of an augmented matrix. 
+     * 
+     * Normal use: IsEye(A, A.size(), A[0].size())
+     * 
+     * @param A Matrix to be checked.
+     * @param l1 Number of rows.
+     * @param l2 Number of columns. 
+     * 
+     * @return True if matrix is an identity
+     * 
+     */
+    for (uint64_t i = 0; i < l1; i++)
+    {
+        for (uint64_t j = 0; j  < l2; j ++)
+        {
+            if (i != j)
+            {
+                if (A[i][j] != 0)
+                {
+                    return(0);
+                }
+            }
+            if (i == j)
+            {
+                if (A[i][j] != 1)
+                {
+                    return(0);
+                }     
+            }
+        }
+    }
+    return(1);
+}
 
+
+std::vector<std::vector<double>> Inverse(std::vector<std::vector<double>> A){
+    /**
+     * @brief Calculates the matrix inverse. 
+     * 
+     */
+
+    if (A.size() != A[0].size())
+    {
+        std::cout << "error, matrix is not square!" << "\n";
+    }
+    
+
+    std::vector<std::vector<double>> IDtoAugment = Eye(A.size(), A[0].size());
+    std::vector<std::vector<double>> Inv(A.size(), std::vector<double>((A[0].size() + IDtoAugment[0].size()), 0));
+    std::vector<std::vector<double>> C = A;
+
+
+    //Augment Matrix.
+    for (uint64_t i = 0; i < A.size(); i++)
+    {
+        for (uint64_t j = 0; j < A[0].size(); j++)
+        {
+            Inv[i][j] = A[i][j];
+        }
+        for (uint64_t k = A[0].size(); k < (A[0].size() + IDtoAugment[0].size()); k++)
+        {
+            Inv[i][k] = IDtoAugment[i][k - A[0].size()];
+        }
+    }
+    //Augmentation Complete.
+
+     //Define values for the While loop
+    uint64_t maxiters = 1000000; //Really big number to avoid a totally fatal infinite loop. 
+    uint64_t count    = 0; //Count for while loop.
+
+
+    //Start actual Gaussian elimination process. 
+    while (count < maxiters)
+    {
+        for (uint64_t index = 0; index < Inv[0].size(); index++)
+        {
+            //Loop over all the indices from zero -> number of rows (not columns; matrix is augmented and no longer square)
+            for (uint64_t rowIndex = 0; rowIndex < A.size(); rowIndex++){
+
+                //Inv[rowIndex][index] = Inv[rowIndex][index] / Inv[rowIndex][rowIndex];
+
+                if (Inv[rowIndex][index] != 0) //If already zero we _must_ skip to avoid division by zero.
+                {
+                    double currentVal = Inv[rowIndex][index]; //Values for computation after quick division by zero check. 
+                    double rowOneVal = Inv[index][index]; 
+
+                    if (rowOneVal != 0)
+                    {
+                        if (rowIndex != index)
+                        {
+                            double correctionFactor = -(currentVal / rowOneVal);
+                            //Add a multiple of correctionfactor*rowoneindex + rowindex DO THIS
+                            for (uint64_t iter = 0; iter < Inv[0].size(); iter++)
+                            {
+                                PrintMat(Inv);
+                                Inv[rowIndex][iter] = Inv[rowIndex][iter] + correctionFactor*Inv[index][iter]; //Add row*multiple to row to reduce to zero. 
+                                
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        //Make principle diagonal into one. 
+        for (uint64_t i = 0; i < Inv.size(); i++)
+        {
+            for (uint64_t j = 0; j < Inv[0].size(); j++)
+            {
+                
+            }   
+        }
+        
+  
+        //Check if our matrix is Identity. If so, break. 
+        if (IsEye(Inv, A.size(), A[0].size()) == 1) 
+        {
+            count = maxiters;
+        }
+        count = count + 1;        
+    }
+
+    //Check if LHS is identity:
+
+    std::vector<std::vector<double>> Out = A;
+
+    for (uint64_t i = A.size(); i < Inv.size(); i++)
+    {
+        for (uint64_t j = A[0].size(); j < Inv[0].size(); j++)
+        {
+            Out[i][j] = Inv[i][j];
+        } 
+    }
+    
+    return(Out);
+}
+
+double Rank(std::vector<std::vector<double>> A){
+    /**
+     * @brief Returns the rank for some matrix A.
+     * 
+     */
+
+    double sum = 0;
+    for (uint64_t i = 0; i < A.size(); i++)
+    {
+        for (uint64_t j = 0; j < A[0].size(); j++)
+        {
+            if (i == j)
+            {
+                 sum += A[i][j];
+            }
+        }
+    }
+    return(sum);
+}
