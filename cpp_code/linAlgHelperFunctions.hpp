@@ -623,7 +623,7 @@ std::vector<std::vector<double>> Inverse(std::vector<std::vector<double>> A){
     return(Out);
 }
 
-double Rank(std::vector<std::vector<double>> A){
+double Trace(std::vector<std::vector<double>> A){
     /**
      * @brief Returns the rank for some matrix A.
      * 
@@ -641,4 +641,22 @@ double Rank(std::vector<std::vector<double>> A){
         }
     }
     return(sum);
+}
+
+double TraceHatMatrix(std::vector<std::vector<double>> X, double lambda){
+
+    //Set up X, X transpose
+    std::vector<std::vector<double>> XTX = MatMul(Transpose(X),X);
+
+    //Apply Penalty
+    std::vector<std::vector<double>> PenalizedXTX = AddWigglyPenalty(lambda, XTX);
+
+    //Apply final multiplications and return.
+    std::vector<std::vector<double>> InvertedPenXTX = Inverse(PenalizedXTX);
+    std::vector<std::vector<double>> TempMat = MatMul(X, InvertedPenXTX);
+    std::vector<std::vector<double>> XinvXTXpenX = MatMul(TempMat,Transpose(X));
+
+
+    return(Trace(XinvXTXpenX));
+
 }
