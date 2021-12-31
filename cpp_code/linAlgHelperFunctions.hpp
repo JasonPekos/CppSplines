@@ -560,13 +560,22 @@ std::vector<std::vector<double>> Inverse(std::vector<std::vector<double>> A){
     //Start actual Gaussian elimination process. 
     while (count < maxiters)
     {
-        for (uint64_t index = 0; index < Inv[0].size(); index++)
+        for (uint64_t index = 0; index < Inv.size(); index++)
         {
             //Loop over all the indices from zero -> number of rows (not columns; matrix is augmented and no longer square)
             for (uint64_t rowIndex = 0; rowIndex < A.size(); rowIndex++){
 
-                //Inv[rowIndex][index] = Inv[rowIndex][index] / Inv[rowIndex][rowIndex];
 
+                //Divide out to make leading element into one.
+                if (index == rowIndex)
+                {
+                    double Divisor = Inv[rowIndex][rowIndex];
+                    for (uint64_t k = 0; k < Inv[0].size(); k++)
+                    {
+                        Inv[rowIndex][k] = Inv[rowIndex][k] / Divisor;
+                    }
+                }
+                
                 if (Inv[rowIndex][index] != 0) //If already zero we _must_ skip to avoid division by zero.
                 {
                     double currentVal = Inv[rowIndex][index]; //Values for computation after quick division by zero check. 
@@ -577,12 +586,12 @@ std::vector<std::vector<double>> Inverse(std::vector<std::vector<double>> A){
                         if (rowIndex != index)
                         {
                             double correctionFactor = -(currentVal / rowOneVal);
+
                             //Add a multiple of correctionfactor*rowoneindex + rowindex DO THIS
                             for (uint64_t iter = 0; iter < Inv[0].size(); iter++)
                             {
-                                PrintMat(Inv);
-                                Inv[rowIndex][iter] = Inv[rowIndex][iter] + correctionFactor*Inv[index][iter]; //Add row*multiple to row to reduce to zero. 
                                 
+                                Inv[rowIndex][iter] = Inv[rowIndex][iter] + correctionFactor*Inv[index][iter]; //Add row*multiple to row to reduce to zero. 
                             }
                         }
                     }
@@ -590,17 +599,8 @@ std::vector<std::vector<double>> Inverse(std::vector<std::vector<double>> A){
             }
         }
 
-        //Make principle diagonal into one. 
-        for (uint64_t i = 0; i < Inv.size(); i++)
-        {
-            for (uint64_t j = 0; j < Inv[0].size(); j++)
-            {
-                
-            }   
-        }
-        
   
-        //Check if our matrix is Identity. If so, break. 
+         //Check if LHS is identity. If so, break. 
         if (IsEye(Inv, A.size(), A[0].size()) == 1) 
         {
             count = maxiters;
@@ -608,15 +608,15 @@ std::vector<std::vector<double>> Inverse(std::vector<std::vector<double>> A){
         count = count + 1;        
     }
 
-    //Check if LHS is identity:
+   
 
     std::vector<std::vector<double>> Out = A;
 
-    for (uint64_t i = A.size(); i < Inv.size(); i++)
+    for (uint64_t i = 0; i < Inv.size(); i++)
     {
-        for (uint64_t j = A[0].size(); j < Inv[0].size(); j++)
+        for (uint64_t j = 0; j < A[0].size(); j++)
         {
-            Out[i][j] = Inv[i][j];
+            Out[i][j] = Inv[i][j + A[0].size()];
         } 
     }
     
