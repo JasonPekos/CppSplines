@@ -146,7 +146,11 @@ For example:
 ./splines PolynomialRegression 2
 ```
 
-For a quadratic regression fit.
+For a quadratic regression fit, which can be automatically plotted with the included script, returning:
+
+
+![plotpnr](https://raw.githubusercontent.com/JasonPekos/CppSplines/main/images/PNR2.png)
+
 
 
 
