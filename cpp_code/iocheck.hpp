@@ -1,18 +1,20 @@
-#include <iostream> // Error messages.
-#include <string>   //String processing.
+#include <iostream> //  Error messages.
+#include <string>   // String processing.
 #pragma once
 
+
+/**
+ * @brief This function checks all the inputs except the validity of the methods used.
+ * 
+ * @param argc number of arguments, standard from C++ main() call when using input at command line.
+ * 
+ * @param argv arguments character pointer, standard from C++ main() call when using input at command lin
+ * 
+ */
 int InputCheck(int argc, const char **argv)
 {
 
-    /**
-     * @brief This function checks all the inputs except the validity of the methods used.
-     * 
-     * @param argc number of arguments, standard from C++ main() call when using input at command line.
-     * 
-     * @param argv arguments character pointer, standard from C++ main() call when using input at command lin
-     * 
-     */
+
 
     if (argc < 2) // Checks to make sure we have at least ONE argument.
     {
@@ -22,7 +24,7 @@ int InputCheck(int argc, const char **argv)
         return (0);
     }
 
-    //Read in method string because we need to check against method to see what we need to look at next.
+    // Read in method string because we need to check against method to see what we need to look at next.
     std::string method(argv[1]);
     std::string PNR = "PolynomialRegression";
     std::string BSP = "BSpline";
@@ -50,7 +52,7 @@ int InputCheck(int argc, const char **argv)
         return (1);
     }
 
-    if (argc < 4 && method != PNR) // Checks to make sure we have at least three arguments.
+    if (argc < 4 && method != PNR) //  Checks to make sure we have at least three arguments.
     {
         std::cout << "There is an issue here with the number of parameters submitted — ";
         std::cout << "the minimum number of parameters for any procedure other than Smooth is 2 \n";
@@ -68,7 +70,7 @@ int InputCheck(int argc, const char **argv)
 
     if (method != PNR && method != SMS)
     {
-        if (argc < 4) // Checks to make sure we have at least three arguments.
+        if (argc < 4) //  Checks to make sure we have at least three arguments.
         {
             std::cout << "There is an issue here with the number of parameters submitted — ";
             std::cout << "the minimum number of parameters for this procedure is 3 \n";
@@ -89,13 +91,13 @@ int InputCheck(int argc, const char **argv)
         }
     }
 
-    if (Arg2.find_first_not_of("1234567890") != std::string::npos) //Check to make sure arg two (power) is a positive integer.
+    if (Arg2.find_first_not_of("1234567890") != std::string::npos) // Check to make sure arg two (power) is a positive integer.
     {
         std::cout << "Error: Please submit a positive integer as argument two.\n";
         return (0);
     }
 
-    //Check  arguments for possible errors and warnings.
+    // Check  arguments for possible errors and warnings.
     if (method != PNR)
     {
         if (method != PSP)
@@ -108,12 +110,12 @@ int InputCheck(int argc, const char **argv)
             }
         }
     }
-    if (atof(argv[2]) > 100) //Splines of degree this large are very dumb.
+    if (atof(argv[2]) > 100) // Splines of degree this large are very dumb.
     {
         std::cout << "You have submitted an unreasonably large power value. ";
         std::cout << "The code will run, and this is mathematically well defined but please ";
         std::cout << "consider trying a smaller value --- splines of degree three are standard! \n";
-        //return(0);
+        // return(0);
     }
     if (atof(argv[2]) < 1)
     {
@@ -121,7 +123,7 @@ int InputCheck(int argc, const char **argv)
         std::cout << "Please supply a value greater than zero. \n";
         return (0);
     }
-    if (method != PNR) //Check number of knots submitted.
+    if (method != PNR) // Check number of knots submitted.
     {
         if (atof(argv[3]) == 0)
         {
