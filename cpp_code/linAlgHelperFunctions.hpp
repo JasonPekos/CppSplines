@@ -14,7 +14,7 @@
  * 9.  DesignPowerBasis: Vandermonde style design matrix for a power basis problem.
  * 10. DesignBSplineBasis: Vandermonde style design matrix for a BSpline problem.
  * 11. NotNAN / MatNotNAN: NAN checking for use in regression splines.
- * 12. AddWigglyPenalty: Add the penalty — lambda^2 \int f''(x) dx — to a regression problem.
+ * 12. AddWigglyPenalty: Add the penalty --- lambda^2 \int f''(x) dx --- to a regression problem.
  * 14. Eye: Create identity matrix.
  * 13. IsEye: Check if a matrix is the identity matrix.
  * 14. Inverse: Invert a matrix.
@@ -27,11 +27,12 @@
  * @copyright Copyright (c) 2021
  * 
  */
-#include <vector>
-#include <string>
-#include <iostream>
-#include <cmath>
-#include "mathHelperFunctions.hpp" //  when I move everything over.
+#include <vector>                   // Everything here uses the vector class. 
+#include <string>                   // Strings for holding methods etc.
+#include <iostream>                 // Debugging, printing to terminal, check-ins for long algorithms. 
+#include <cmath>                    // Pow() etc.
+#include <algorithm>                // Iterators for vector sort. 
+#include "mathHelperFunctions.hpp"  // Cox-De-Boor construction, pm for power basis.
 
 #pragma once
 
@@ -472,7 +473,7 @@ std::vector<std::vector<double>> Eye(uint64_t size1, uint64_t size2)
 
 /**
  * @brief This function adds a wigglyness penalty to a smoothing spline. The derivation
- * for this penalty matrix is given in Wood — Generalized Additive Models (2006).
+ * for this penalty matrix is given in Wood --- Generalized Additive Models (2006).
  * 
  * It provides a slightly crude approximation to the integral of the second derivative.
  * 

@@ -1,5 +1,7 @@
-#include <iostream> //  Error messages.
-#include <string>   // String processing.
+#include <iostream>   // Error messages.
+#include <string>     // String processing.
+#include <algorithm>  // Vector / String ordering.
+
 #pragma once
 
 
@@ -13,14 +15,19 @@
  */
 int InputCheck(int argc, const char **argv)
 {
-
-
-
-    if (argc < 2) // Checks to make sure we have at least ONE argument.
+    if (argc < 3) // Checks to make sure we have at least ONE argument after method.
     {
-        std::cout << "There is an issue here with the number of parameters submitted — ";
-        std::cout << "the minimum number of parameters for any procedure is 1 \n";
-        std::cout << "e.g. arg1: Smooth — please submit at least one argument \n";
+        std::cout << "There is an issue here with the number of parameters submitted --- ";
+        std::cout << "The minimum number of parameters for any procedure is 2 \n";
+        std::cout << "e.g. arg1: Smooth auto" << "\n";
+        std::cout << "\n ";
+        std::cout << "ARGUMENTS:" << "\n";
+        std::cout <<  "(1) Method: PowerBasis [+2 args], BSpline [+2 args], Smooth [+1 arg], PolynomialRegression[+1 arg]" << "\n";
+        std::cout <<  "(2a) If method: PowerBasis, BSpline, PolynomialRegression | arg 2 -> power of basis functions involved. Ex: splines Bspline 2 3 " << "\n";
+        std::cout <<  "(2b) If method: Smooth | arg 2 -> Penalization term (Lambda). Ex: splines Smooth 0.2" << "\n";
+        std::cout <<  "(3) If method: PowerBasis, BSpline | arg 3 -> Number of interior knots. Ex: splines Bspline 2 3 " << "\n";
+
+
         return (0);
     }
 
@@ -54,7 +61,7 @@ int InputCheck(int argc, const char **argv)
 
     if (argc < 4 && method != PNR) //  Checks to make sure we have at least three arguments.
     {
-        std::cout << "There is an issue here with the number of parameters submitted — ";
+        std::cout << "There is an issue here with the number of parameters submitted --- ";
         std::cout << "the minimum number of parameters for any procedure other than Smooth is 2 \n";
         std::cout << "\n Parameter One: Method (e.g PolynomialRegression) \n";
         std::cout << " Parameter Two: degree of spline basis (e.g. 3)\n";
@@ -72,7 +79,7 @@ int InputCheck(int argc, const char **argv)
     {
         if (argc < 4) //  Checks to make sure we have at least three arguments.
         {
-            std::cout << "There is an issue here with the number of parameters submitted — ";
+            std::cout << "There is an issue here with the number of parameters submitted --- ";
             std::cout << "the minimum number of parameters for this procedure is 3 \n";
             std::cout << "\n Parameter One: Method (e.g BSpline) \n";
             std::cout << " Parameter Two: degree of spline basis (e.g. 3)\n";

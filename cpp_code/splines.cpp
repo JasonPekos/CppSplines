@@ -16,6 +16,7 @@
 #include <string>                    // Holding IO strings.
 #include <iostream>                  // command line input, write errors to command line.
 #include <fstream>                   // Read, write to csv.
+#include <algorithm>                 // Find First Not Of
 #include <cmath>                     // Various math functions, e.g. abs.
 
 int main(int argc, char const *argv[])
@@ -65,7 +66,7 @@ int main(int argc, char const *argv[])
         }
     }
 
-    // If we aren't using a smoothing spline, we have a second command line argument.
+    // If we aren't using a smoothing spline, we have a different command line argument.
     if (method != SMS)
     {
         // The second argument is always the power of the spline. We fix the GAM spline to be third order, which is relatively standard practice.
@@ -135,14 +136,14 @@ int main(int argc, char const *argv[])
         // Check for legitimate input. Must be float. Can be negative and spline is still well defined.
         if (xVal.find_first_not_of("-1234567890.") != std::string::npos)
         {
-            std::cout << "Error with .csv input file";
+            std::cout << "Error with .csv input file on line containing:" << xVal << "\n";
             return (-1);
         }
 
         // Similar check for legitimate input.
         if (yVal.find_first_not_of("-1234567890.") != std::string::npos)
         {
-            std::cout << "Error with .csv input file";
+            std::cout <<  "Error with .csv input file on line containing:" << yVal << "\n";
             return (-1);
         }
 
@@ -231,7 +232,7 @@ int main(int argc, char const *argv[])
     std::ofstream output("output.csv"); // IO check.
     if (!output.is_open())
     {
-        std::cout << "Error opening output file";
+        std::cout << "Error opening output file: input.csv probably missing from cpp_code directory.";
         return (-1);
     }
 

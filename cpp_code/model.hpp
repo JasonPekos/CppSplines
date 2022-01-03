@@ -33,11 +33,11 @@
  * 
  */
 
-#include <iostream> // Testing & Debugging
-#include <vector>   // Linear Algebra storage
+#include <iostream>                   // Testing & Debugging
+#include <vector>                     // Linear Algebra storage
 #include <algorithm>
-#include "linAlgHelperFunctions.hpp" // Linear Algebra helper functions, e.g. solve a linear system, calculate trace of hat matrix.
-#include "mathHelperFunctions.hpp"   // Math helper functions, e.g. Cox De Boor for construction of basis.
+#include "linAlgHelperFunctions.hpp"  // Linear Algebra helper functions, e.g. solve a linear system, calculate trace of hat matrix.
+#include "mathHelperFunctions.hpp"    // Math helper functions, e.g. Cox De Boor for construction of basis.
 #pragma once
 
 /**
@@ -47,14 +47,36 @@
 class Spline
 {
 private:
-    uint64_t Knots = 3;                // Data about model (number of knots)
-    uint64_t Power = 3;                // Data about model (power of knots)
-    std::string Method = "PowerBasis"; // Data about model (Method) [PowerBasis or BSpline or PolynomialRegression]
 
-    // Holds the coefficients. Initialized at zero.
+    /**
+     * @brief Number of interior knots in a spline.
+     *  
+     */
+    uint64_t Knots = 3;  
+    
+    /**
+     * @brief Data about model (power of knots)
+     * 
+     */
+    uint64_t Power = 3;  
+
+    /**
+     * @brief Data about model (Method) [PowerBasis or BSpline or PolynomialRegression]
+     * 
+     */
+    std::string Method = "PowerBasis";
+
+    /**
+     * @brief Holds the coefficients. Initialized at zero.
+     * 
+     */
     std::vector<std::vector<double>> Coe{1, std::vector<double>(1, 0)};
 
-    // Holds the actual knot positions. Filled when fitting the model.
+    /**
+     * @brief  Holds the actual knot positions. Filled when fitting the model. Can go through stages of 
+     * extra padding depending on method called, e.g. B-Spline methods add substantial extra non-unique boundary knots.
+     * 
+     */
     std::vector<double> kTemp = {};
 
 public:
@@ -321,19 +343,35 @@ public:
 class GAM
 {
 private:
-    // Holds knots — private now, as we just place them at every point.
+    /**
+     * @brief Holds knot positions. This class always places a knot at each point, plus substantial non-unique
+     * boundary padding.
+     * 
+     */
     std::vector<double> kTemp = {};
 
-    // Power of basis functions
+    /**
+     * @brief Power of basis function.
+     * 
+     */
     uint64_t Power = 3;
 
-    // Model coefficients.
+    /**
+     * @brief Model Coefficients.
+     * 
+     */
     std::vector<std::vector<double>> Coe{1, std::vector<double>(1, 0)};
 
-    // Cross Validation score, set to zero before model fitting.
+    /**
+     * @brief Cross Validation score, set to zero before model fitting.
+     * 
+     */
     double CrossValScore = 0;
 
-    // Penalization value.
+    /**
+     * @brief Penalization value.
+     * 
+     */
     double Lambda = 0;
 
 public:
@@ -470,8 +508,6 @@ public:
     */
     void seekLambda(std::vector<double> t, std::vector<double> y)
     {
-
-
         // Holds GCV score for each lambda while running this method.
         std::vector<double> tempLambda = {};
 
@@ -498,10 +534,14 @@ public:
 
     /**
      * @brief Constructor for a GAM.
-     * 
      */
     GAM(double lambda)
     {
+        if (lambda < 0)
+        {
+            throw std::invalid_argument("received negative value for lambda");
+        }
+        
         Lambda = lambda;
     }
 };

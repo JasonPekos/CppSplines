@@ -1,5 +1,5 @@
-#include <vector>
-#include <cmath>
+#include <vector>          // Vectors in CoxDeBoor algorithm  
+#include <cmath>           // Pow
 
 #pragma once
 
