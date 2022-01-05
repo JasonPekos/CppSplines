@@ -237,12 +237,6 @@ public:
      */
     double predict(double t)
     {
-        // if (Power > std::numeric_limits<double>::max()) // (double)
-        // {
-        //     std::cout << ("Y Value too big; cast failed in GCV calculation");
-        //     exit(-1); //Check if I can convert power to a double
-        // }
-
         // Define value we sum into.
         double val = 0;
         if (Method == "PolynomialRegression")
