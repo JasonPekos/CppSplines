@@ -1,5 +1,12 @@
 {
     "files.associations": {
-        "iostream": "cpp"
-    }
+        "iostream": "cpp",
+        "filesystem": "cpp",
+        "stdexcept": "cpp",
+        "string": "cpp",
+        "limits": "cpp",
+        "exception": "cpp",
+        "vector": "cpp"
+    },
+    "python.pythonPath": "/Users/work/opt/anaconda3/envs/py_nomkl/bin/python"
 }

@@ -72,7 +72,8 @@ int main(int argc, char const *argv[])
         // The second argument is always the power of the spline. We fix the GAM spline to be third order, which is relatively standard practice.
         // See: Wood (2006), Hastie and Tibshirani ESL chapter 5.
         std::string Arg2(argv[2]);
-        power = (uint64_t)stoi(Arg2);
+        char* end;
+        power = strtoull(Arg2.c_str(),&end,10);
     }
 
     // If we aren't using a smoothing spline or Polynomial Regression, we need to manually specify knot number.
@@ -80,7 +81,8 @@ int main(int argc, char const *argv[])
     {
         // Smoothing splines place a knot at every data point, and Polynomial Regression has no knots.
         std::string Arg3(argv[3]);
-        knots = (uint64_t)stoi(Arg3);
+        char* end;
+        knots = strtoull(Arg3.c_str(),&end,10);
     }
 
     /*
@@ -166,7 +168,7 @@ int main(int argc, char const *argv[])
     */
 
     // Temp vectors to hold predictions for us to push into the output.csv file.
-    std::vector<double> xTemp = linspace(t[0], t.back(), abs((t.back() - t[0]) / 10000)); //Spaced like this to avoid weird time series input over tiny ranges.
+    std::vector<double> xTemp = linspace(t[0], t.back(), fabs((t.back() - t[0]) / 10000)); //Spaced like this to avoid weird time series input over tiny ranges.
 
     std::vector<double> modelTemp = {}; //Model output.
 

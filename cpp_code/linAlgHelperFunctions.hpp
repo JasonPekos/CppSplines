@@ -8,7 +8,7 @@
  * 3.  Transpose: Return matrix transpose
  * 4.  MatMul: Matrix multiplication
  * 5.  MatVecMul: Matrix-Vector multiplication + standardizing type.
- * 6.  TriLCheck: Check if a matrix is upper triangular. 
+ * 6.  TriUCheck: Check if a matrix is upper triangular. 
  * 7.  SolveSystem: Solve a linear system using reduction to Row Echelon form and then back substitution.
  * 8.  StripDuplicates: Strip duplicates that are next to eachother from a vector.
  * 9.  DesignPowerBasis: Vandermonde style design matrix for a power basis problem.
@@ -104,7 +104,7 @@ std::vector<std::vector<double>> Design(std::vector<double> t, uint64_t power)
     {
         for (uint64_t j = 0; j < power; j++)
         {
-            mat[i][j] = pow(t[i], j);
+            mat[i][j] = pow(t[i], (double)j);
         }
     }
     return (mat);
@@ -134,11 +134,11 @@ std::vector<std::vector<double>> DesignPowerBasis(std::vector<double> t, uint64_
     {
         for (uint64_t j = 0; j < power; j++)
         {
-            mat[i][j] = pow(t[i], j);
+            mat[i][j] = pow(t[i], (double)j);
         }
         for (uint64_t j = 0; j < knots.size(); j++) // 
         {
-            mat[i][power + j] = pow(pm(t[i] - knots[j]), (power - 1));
+            mat[i][power + j] = pow(pm(t[i] - knots[j]), ((double)power - 1));
         }
     }
     return (mat);
@@ -275,7 +275,7 @@ std::vector<std::vector<double>> MatVecMul(std::vector<std::vector<double>> A, s
  * 
  * @return Bool: one if matrix is Upper Triangular, zero else.
  */
-bool TriLCheck(std::vector<std::vector<double>> A)
+bool TriUCheck(std::vector<std::vector<double>> A)
 {
     double sum = 0;
 
@@ -285,7 +285,8 @@ bool TriLCheck(std::vector<std::vector<double>> A)
         // Sum absolute value of all elements to see if any are greater than zero.
         for (uint64_t j = 0; j < i; j++) 
         {
-            sum += abs(A[i][j]);
+            double val = A[i][j];
+            sum += pow(val,2);
         }
     }
     /*
@@ -367,7 +368,7 @@ std::vector<std::vector<double>> SolveSystem(std::vector<std::vector<double>> B,
             }
         }
         // Check if our matrix is lower triangular -> simplified. If so, break.
-        if (TriLCheck(A) == 1) 
+        if (TriUCheck(A) == 1) 
         {
             count = maxiters;
         }

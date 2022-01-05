@@ -119,7 +119,7 @@ public:
                 Place 'Knots' evenly spaced knots over the range of time values. 
                 */
                 double range = t.back() - t.front();
-                double kEvery = range / (Knots);
+                double kEvery = range / (static_cast<double>((Knots))); //Can't use integer division here. 
                 double kCurrent = kEvery;
                 while (kCurrent < t.back())
                 {
@@ -177,7 +177,7 @@ public:
                 Place 'Knots' evenly spaced knots over the range of time values. 
                 */
                 double range = t.back() - t.front();
-                double kEvery = range / (Knots);
+                double kEvery = range / (static_cast<double>(Knots));
                 double kCurrent = kEvery;
                 while (kCurrent < t.back())
                 {
@@ -237,7 +237,11 @@ public:
      */
     double predict(double t)
     {
-
+        // if (Power > std::numeric_limits<double>::max()) // (double)
+        // {
+        //     std::cout << ("Y Value too big; cast failed in GCV calculation");
+        //     exit(-1); //Check if I can convert power to a double
+        // }
 
         // Define value we sum into.
         double val = 0;
@@ -246,7 +250,7 @@ public:
             // Again, sum(coe_n*basisFuction_n (t)) for all n.
             for (uint64_t i = 0; i < Coe.size(); i++)
             {
-                val += Coe[i][0] * pow(t, i);
+                val += Coe[i][0] * pow(t, static_cast<double>(i)); 
             }
         }
         if (Method == "PowerBasis")
@@ -255,12 +259,12 @@ public:
             val = 0;
             for (uint64_t i = 0; i < Power + 1; i++)
             {
-                val += Coe[i][0] * pow(t, i);
+                val += Coe[i][0] * pow(t, static_cast<double>(i));
             }
             // Power basis functions, e.g. coe * +_(t - knot)^max_power.
             for (uint64_t i = Power + 1; i < Coe.size(); i++)
             {
-                val += Coe[i][0] * pow(pm(t - kTemp[i - (Power + 1)]), Power);
+                val += Coe[i][0] * pow(pm(t - kTemp[i - (Power + 1)]), static_cast<double>(Power));
             }
         }
         if (Method == "BSpline")
@@ -297,11 +301,11 @@ public:
         Method = method;
 
         // Simple IO check in the case of explicit construction outside of CL arguments.
-        if (knots < 0)
+        if (knots < 1 && method != PR)
         {
-            std::cout << "Error: can't construct with a negative number of knots!"
+            std::cout << "Error: can't construct spline without any knots."
                       << "\n";
-            throw std::invalid_argument("received negative value");
+            throw std::invalid_argument("received invalid value");
         }
         if (power < 1)
         {
@@ -488,12 +492,12 @@ public:
 
         // Numerator of GCV given in Wood 2006, pg. 171
         for (uint64_t i = 0; i < y.size(); i++)
-        {
-            GCV += y.size() * pow((y[i] - predict(t[i])), 2);
+        {   
+            GCV += static_cast<double>(y.size()) * pow((y[i] - predict(t[i])), 2);
         }
 
         // Complete GCV formula with call to the trace of the hat matrix.
-        GCV = GCV / pow((y.size() - TraceHatMatrix(DesignBSplineBasis(t, Power, kTemp), Lambda)), 2);
+        GCV = GCV / pow((static_cast<double>(y.size()) - TraceHatMatrix(DesignBSplineBasis(t, Power, kTemp), Lambda)), 2);
 
         CrossValScore = GCV;
     }
