@@ -3,25 +3,15 @@
 ![header](https://raw.githubusercontent.com/JasonPekos/CppSplines/main/cubicanim.gif)
 
 ## Scope
-This repo contains object oriented spline-fitting code written in c++. Given some time series data, and command line arguments for:
+This repo contains object oriented spline-fitting code written in c++. 
 
-
-- Class of basis functions
-    - Truncated power basis
-    - B-spline basis
-- Degree of basis function
-- Number of knot points
-
-
-Following e.g. the SKlean style of statistics model classes, we have a model instantiated with hyperparameters, using methods to fit to data and to predict outcomes. 
-
-Plotting code is also provided. 
+Plotting code, in Python and Julia, is also provided. 
 
 **Overview:**
 
-Although linear models are often convenient (or even necessary), in realistic applications, whatever function $f(x)$ we are estimating is highly likely to be non-linear. This package contains some basis expansion methods for fitting non-linear models. 
+Although linear models are often convenient (or even necessary), in realistic applications, whatever function we are estimating is highly likely to be non-linear. This package contains some basis expansion methods for fitting non-linear models. Specifically, it can fit Power Basis regression splines, regression B-Splines, and penalized B-Splines. 
 
-The common theme is that, instead of regressing on our vector of inputs directly, we instead augment or replace each input with a corresponding nonlinear transformation at that point, such that the transformations sum linearly to model target output. 
+The common theme is that, instead of regressing on our vector of inputs directly, we instead augment or replace each input with a corresponding nonlinear transformation at that point, such that the transformations sum linearly to model our target variable. 
 
 That is, instead of modelling the relationship as:
 
@@ -31,17 +21,17 @@ We construct $M$ nonlinear transformations $b_m(x)$ for each $x$ and $m \leq M$,
 
 $$f(x) = \sum_0^M \beta_m (b_m(x))$$
 
-Where the utility of this approach comes from the fact that, after applying the non-linear transformation, the functions enter the model linearly. This means that the vast array of linear model literature can — in many cases — be adapted to apply to basis expansion methods, a benefit which doesn't appear when using e.g. gradient boosted trees or deep neural networks. 
+The utility of this approach comes from the fact that, after applying the non-linear transformation, the functions enter the model linearly. This means that the vast array of linear model literature can — in many cases — be adapted to apply to basis expansion methods, a benefit which doesn't appear when using e.g. deep neural networks. 
 
-Additionally, unlike some other machine learning methods, these remain (weakly) convex optimization problems, and so we are assured that, if a solution is recovered, it is a global maxima. 
+Additionally, unlike some other machine learning methods, these remain (weakly) convex optimization problems, and so we are assured that, if a solution is recovered, it is a globally optimal solution. 
 
 ### *Regression Splines*
 
-The first method available here is a regression spline. We split the data along the time axis into $k$ interior knots, and fit a piecewise polynomial between each knot. Additionally, we enforce smoothness constraints such that each successive polynomial has continuous value, first, and second derivatives at each knot point where it meets. We use two different basis construction methods here --- BSplines and Power Basis splines. The BSplines represent a natural spline basis, in contrast to the Power Basis, which enforces no such boundary constraint. 
+The first method available here is a regression spline. We split the data along the time axis into $k$ interior knots, and fit a piecewise polynomial between each knot. Additionally, we enforce smoothness constraints such that each successive polynomial has continuous value, first, and second derivatives at each knot point where it meets. We use two different basis construction methods here --- BSplines and Power Basis splines.  
 
 #### *Power Basis*
 
-The power basis representation of a spline is found by augmenting the basis for a polynomial regression problem of that same order with additional basis functions at each not to enforce our continuity constraints.
+The power basis representation of a spline is found by augmenting the basis for a polynomial regression problem of that same order with additional basis functions at each knot; this is done to enforce our continuity constraints.
 
 For some degree $n$ basis with $k$ knots, our basis representation is given by:
 
@@ -96,11 +86,11 @@ Notes:
 
 #### *B-Splines*
 
-Although computationally simple, the power basis provided above has numerous undesirable numerical properties --- specifically, they require the computation of large numbers, which can lead to rounding problems. To solve this issue, we turn towards an alternative basis construction which can span the same set of functions as a clamped power basis. 
+Although computationally simple, the power basis provided above has numerous undesirable numerical properties --- specifically, it requires the computation of large numbers, which can lead to rounding problems. To solve this issue, we turn towards an alternative basis construction which can span the same set of functions as a clamped power basis, but which has more desirable numerical properties.  
 
-Basis spline are also wonderful in that they provide local support --- avoiding colinearity issues --- and are therefore much more well behaved numerically. 
+Another advantage to Basis splines is that they are zero for all value far away from knots points, providing local support. This helps avoiding colinearity issues common with other basis representations. 
 
-Unlike the power basis, higher order basis functions have no simple closed form, and must be represented as the iterative convolution of lower order basis functions, where the $0$-th order is an indicator function on successive knots.
+Unlike the power basis, higher order B-spline basis functions have no simple closed form, and must be represented as the iterative convolution of lower order basis functions, where the $0$-th order is an indicator function on successive knots.
 
 For data in 'input.csv', we can return a power B-spline regression spline with:
 
@@ -196,7 +186,7 @@ Our main concern in this case is one of overfitting — to avoid this, we need 
 
 Attempt to select lambda by hand can work, but ideally we'd like some sort of automatic criteria to select lambda such that we avoid overfitting on the data. 
 
-The standard approach is to use some sort of cross validation, portioning the data into different train and test sets to test generalization error. 
+The standard approach is to use some sort of cross validation, portioning the data into different train and test sets to evaluate generalization error. 
 
 Here we use Leave One Out cross validation, fitting the data to everything except for one data point, and then testing our performance on that one datapoint, iterating over all the data. That is, for $\hat f^{[-1]}_i $ — the model fit to all data except $y_i$ — we calculate:
 
@@ -283,7 +273,7 @@ With one exception, systems are solved in this package via Gaussian elimination 
 - Starting with the last element of the lower triangular matrix, construct the solution vector by iterating up over the rows of the matrix.
 
 
-Due to the matrix inverse being ill-conditioned, this is vastly preferable to explicit computations of $\hat Beta$. Unfortunately, when calculating the hat matrix, an inverse needed to be computed exactly. Ideally an alternative should be implemented here, using some sort of decomposition (e.g. SVD) to recover a more well conditioned estimate. 
+Due to the matrix inverse being ill-conditioned, this is vastly preferable to explicit computations of $\hat \beta$. Unfortunately, when calculating the hat matrix, an inverse needed to be computed exactly. Ideally an alternative should be implemented here, using some sort of decomposition (e.g. SVD) to recover a more well conditioned estimate. 
 
 In the case of an explicit inverse, the above algorithm was modified slightly:
 
