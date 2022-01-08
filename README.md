@@ -88,7 +88,7 @@ Notes:
 
 Although computationally simple, the power basis provided above has numerous undesirable numerical properties --- specifically, it requires the computation of large numbers, which can lead to rounding problems. To solve this issue, we turn towards an alternative basis construction which can span the same set of functions as a clamped power basis, but which has more desirable numerical properties.  
 
-Another advantage to Basis splines is that they are zero for all value far away from knots points, providing local support. This helps avoiding colinearity issues common with other basis representations. 
+Another advantage to Basis splines is that they are zero for all values far away from knots points, providing local support. This helps avoiding colinearity issues common with other basis representations. 
 
 Unlike the power basis, higher order B-spline basis functions have no simple closed form, and must be represented as the iterative convolution of lower order basis functions, where the $0$-th order is an indicator function on successive knots.
 
@@ -278,7 +278,7 @@ Due to the matrix inverse being ill-conditioned, this is vastly preferable to ex
 In the case of an explicit inverse, the above algorithm was modified slightly:
 
 - Augment with an identity matrix.
-- Eliminating all off-diagonal elements.
+- Eliminating all off-diagonal elements. 
 - Set pivots to zero.
 - Return resultant transform of identity as matrix inverse. 
 
