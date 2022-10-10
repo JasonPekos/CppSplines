@@ -3,7 +3,7 @@
 ![header](https://raw.githubusercontent.com/JasonPekos/CppSplines/main/cubicanim.gif)
 
 ## Scope
-This repo contains object oriented spline-fitting code written in c++. 
+This repo contains object oriented spline-fitting code written in c++. Left online as an example for CSE 701.
 
 Plotting code, in Python and Julia, is also provided. 
 
